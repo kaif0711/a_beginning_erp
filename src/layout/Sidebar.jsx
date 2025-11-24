@@ -28,7 +28,7 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* ⭐ Mobile toggle button */}
+      {/* Mobile toggle button */}
       <button
         onClick={() => setOpen(!open)}
         className="sm:hidden fixed top-2 left-4 z-50 bg-white text-primary px-3 py-1 rounded shadow-md"
@@ -36,17 +36,16 @@ const Sidebar = () => {
         ☰
       </button>
 
-      {/* ⭐ Sidebar wrapper — responsive */}
+      {/* Sidebar */}
       <aside
         className={`
           bg-[#255267] text-white h-screen fixed top-0 z-40 flex flex-col
-          transition-all duration-300
-          w-64
-          ${open ? "left-0" : "-left-64"}   // ⭐ Mobile slide animation
-          sm:left-0                         // ⭐ Desktop always visible
+          transition-all duration-300 w-64
+          ${open ? "left-0" : "-left-64"}
+          sm:left-0
         `}
       >
-        {/* TOP PROFILE CARD */}
+        {/* Profile */}
         <div className="flex flex-col items-center py-6 border-b border-white/10">
           <img
             src="https://imgs.search.brave.com/BpNWWlad2aQ4zsAAsIUslKXH1hV95CKiXnHqDzCzYGI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/aWNvbnM4LmNvbS9v/ZmZpY2U4MC8xMjAw/L2FkbWluaXN0cmF0/b3ItbWFsZS5qcGc"
@@ -62,17 +61,14 @@ const Sidebar = () => {
         {/* MENU ITEMS */}
         <nav className="flex-1 mt-4 pl-8">
           <ul className="space-y-1">
+
             {/* Student */}
             <li>
               <NavLink
                 to="/students"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
                 <FaListAlt className="text-lg" />
@@ -85,12 +81,8 @@ const Sidebar = () => {
               <NavLink
                 to="/courses"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
                 <FaUsers className="text-lg" />
@@ -103,12 +95,8 @@ const Sidebar = () => {
               <NavLink
                 to="/fees"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
                 <FaFileInvoice className="text-lg" />
@@ -121,12 +109,8 @@ const Sidebar = () => {
               <NavLink
                 to="/certificates"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
                 <FaMoneyBill className="text-lg" />
@@ -139,12 +123,8 @@ const Sidebar = () => {
               <NavLink
                 to="/internship"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
                 <FaListAlt className="text-lg" />
@@ -157,12 +137,8 @@ const Sidebar = () => {
               <NavLink
                 to="/leave"
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-5 py-3 rounded-l-full cursor-pointer transition
-              ${
-                isActive
-                  ? "bg-white text-[#255267]"
-                  : "hover:bg-white hover:text-[#255267]"
-              }`
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${isActive ? "active-menu" : " hover:text-black"}`
                 }
               >
                 <FaListAlt className="text-lg" />
@@ -172,7 +148,7 @@ const Sidebar = () => {
           </ul>
         </nav>
 
-        {/* LOGOUT */}
+        {/* Logout */}
         <div className="mt-auto mb-6 pl-15">
           <button
             className="flex items-center gap-3 px-5 py-3 bg-[#255267] rounded-full cursor-pointer hover:bg-white hover:text-[#255267] transition"

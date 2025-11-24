@@ -6,3 +6,41 @@
     --color-tertiary: #0000ff;
 }
 
+
+/* Sidebar Active Menu Item Styling */
+.active-menu {
+  position: relative;
+  background: #ffffff !important;
+  color: #255267 !important;
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
+  z-index: 1;
+}
+
+/* Top curved notch */
+.active-menu::before {
+  content: "";
+  position: absolute;
+  top: -32px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border-bottom-right-radius: 16px;
+  box-shadow: 0 16px 0 0 #ffffff;
+  pointer-events: none;
+}
+
+/* Bottom curved notch */
+.active-menu::after {
+  content: "";
+  position: absolute;
+  bottom: -32px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -16px 0 0 #ffffff;
+  pointer-events: none;
+}

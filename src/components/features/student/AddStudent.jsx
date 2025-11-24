@@ -22,6 +22,7 @@ const AddStudent = ({ isOpen, onClose }) => {
   const [dateOfJoining, setDateOfJoining] = useState("");
   const [dateOfEnd, setDateOfEnd] = useState("");
   const [enrolledFees, setEnrolledFees] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
 
   // ---- ERROR STATE OBJECT ---- //
   const [errors, setErrors] = useState({});
@@ -60,6 +61,7 @@ const AddStudent = ({ isOpen, onClose }) => {
     setDateOfJoining("");
     setDateOfEnd("");
     setEnrolledFees("");
+    setPaymentMode("");
     setErrors({});
   };
 
@@ -85,6 +87,7 @@ const AddStudent = ({ isOpen, onClose }) => {
         dateOfJoining,
         ...(dateOfEnd && { dateOfEnd }),
         ...(enrolledFees && { enrolledFees }),
+        ...(paymentMode && { paymentMode }),
       });
 
       toast.success("Student added successfully!");
@@ -153,14 +156,14 @@ const AddStudent = ({ isOpen, onClose }) => {
       <div className="mx-2 sm:mx-4 overflow-y-auto max-h-[70vh] pb-6 mt-5 pr-2">
         <div className="rounded-xl">
           {/* NAME */}
-          <label className="text-xs text-gray-500 block mb-1">
+          <label className="text-md text-gray-700 font-semibold block mb-1">
             Student&apos;s Name
           </label>
           <input
             value={studentName}
             onChange={(e) => setStudentName(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="Enter your name"
           />
           {errors.name && (
@@ -168,14 +171,14 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* FATHER NAME */}
-          <label className="text-xs text-gray-500 block mb-1 mt-4">
+          <label className="text-md text-gray-700 font-semibold block mb-1 mt-4">
             Father&apos;s Name
           </label>
           <input
             value={studentFatherName}
             onChange={(e) => setStudentFatherName(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="Enter father's name"
           />
           {errors.fatherName && (
@@ -183,14 +186,14 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* EMAIL */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Student&apos;s Email
           </label>
           <input
             value={studentEmail}
             onChange={(e) => setStudentEmail(e.target.value)}
             type="email"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="name@gmail.com"
           />
           {errors.email && (
@@ -198,7 +201,7 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* GENDER */}
-          <label className="text-xs text-gray-500 block mb-1 mt-4">
+          <label className="text-md text-gray-700 font-semibold block mb-1 mt-4">
             Student&apos;s Gender
           </label>
           <div className="flex flex-wrap gap-5 pl-1 mt-2">
@@ -220,14 +223,14 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* MOBILE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Mobile No.
           </label>
           <input
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="Enter mobile number"
           />
           {errors.mobileNumber && (
@@ -235,37 +238,39 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* FATHER MOBILE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Father&apos;s Mobile No.
           </label>
           <input
             value={fatherMobileNumber}
             onChange={(e) => setFatherMobileNumber(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
-            placeholder="Enter father&apos;s mobile number"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+            placeholder="Enter father's mobile number"
           />
           {errors.fatherNumber && (
             <p className="text-red-500 text-xs mt-1">{errors.fatherNumber}</p>
           )}
 
           {/* DOB */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">DOB</label>
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+            DOB
+          </label>
           <input
             value={DOB}
             onChange={(e) => setDOB(e.target.value)}
             type="date"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
           />
           {errors.DOB && (
             <p className="text-red-500 text-xs mt-1">{errors.DOB}</p>
           )}
 
           {/* COURSE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Course
           </label>
-          <div className="w-full border border-gray-400 rounded-lg px-3 py-2 relative">
+          <div className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md relative">
             <select
               value={courseid}
               onChange={(e) => setCourseid(e.target.value)}
@@ -285,45 +290,66 @@ const AddStudent = ({ isOpen, onClose }) => {
           )}
 
           {/* DATE OF JOINING */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Date of Joining
           </label>
           <input
             value={dateOfJoining}
             onChange={(e) => setDateOfJoining(e.target.value)}
             type="date"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
           />
           {errors.dateOfJoining && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.dateOfJoining}
-            </p>
+            <p className="text-red-500 text-xs mt-1">{errors.dateOfJoining}</p>
           )}
 
           {/* DATE OF END */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Date of End
           </label>
           <input
             value={dateOfEnd}
             onChange={(e) => setDateOfEnd(e.target.value)}
             type="date"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
           />
 
           {/* FEES */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Enrolled Fees
           </label>
           <input
             value={enrolledFees}
-            onChange={(e) => setEnrolledFees(e.target.value)}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^0-9.]/g, "");
+              setEnrolledFees(raw);
+            }}
             type="number"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="Fees"
           />
           {errors.enrolledFees && (
             <p className="text-red-500 text-xs mt-1">{errors.enrolledFees}</p>
+          )}
+
+          {/* ⭐ PAYMENT MODE DROPDOWN (added here) */}
+          {enrolledFees && (
+            <div>
+              <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+                Payment Mode
+              </label>
+              <select
+                value={paymentMode}
+                onChange={(e) => setPaymentMode(e.target.value)}
+                className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
+              >
+                <option value="">Select Payment Method</option>
+                <option value="CASH">CASH</option>
+                <option value="UPI">UPI</option>
+                <option value="CARD">CARD</option>
+                <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+              </select>
+            </div>
           )}
 
           {/* BUTTONS */}

@@ -11,13 +11,13 @@ const formatDate = (dateString) => {
   return `${day}-${month}-${year}`;
 };
 
-const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
+const ViewFeesDetail = ({ isOpen3, onClose3, fee }) => {
   useEffect(() => {
     document.body.style.overflow = isOpen3 ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
   }, [isOpen3]);
 
-  if (!student) return null;
+  if (!fee) return null;
 
   return (
     <Modal
@@ -40,54 +40,78 @@ const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
       </button>
 
       {/* Heading */}
-      <h1 className="text-2xl font-semibold text-center mb-6">
-        Student Details
-      </h1>
+      <h1 className="text-2xl font-semibold text-center mb-6">Fees Details</h1>
 
       {/* Scrollable Content */}
       <div className="overflow-y-auto max-h-[70vh] px-2 space-y-4">
-        {/* GRID VIEW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Detail label="Student Name" value={student.name} />
-          <Detail label="Father's Name" value={student.fatherName} />
-
-          <Detail label="Gender" value={student.gender} />
-          <Detail label="Mobile Number" value={student.mobileNumber} />
-
-          <Detail label="Father Number" value={student.fatherNumber} />
-
-          <Detail label="Date of Birth" value={formatDate(student.DOB)} />
-          <Detail label="Course" value={student.course?.courseName || "N/A"} />
-
           <Detail
-            label="Date of Joining"
-            value={formatDate(student.dateOfJoining)}
+            label="Student Name"
+            value={fee.student?.name || fee.studentName || "N/A"}
           />
-          <Detail label="Date of End" value={formatDate(student.dateOfEnd)} />
 
           <Detail
-            label="Enrolled Fees"
+            label="Course Name"
+            value={fee.course?.courseName || fee.courseName || "N/A"}
+          />
+
+          <Detail
+            label="Total Fees"
             value={
               <span className="flex items-center gap-1">
                 <FaRupeeSign className="text-gray-700" />
-                {student.enrolledFees
-                          ? Number(student.enrolledFees).toLocaleString("en-IN")
-                          : "N/A"}
+                {fee.totalFees != null
+                  ? Number(fee.totalFees).toLocaleString("en-IN")
+                  : fee.course?.coursePrice != null
+                  ? Number(fee.course.coursePrice).toLocaleString("en-IN")
+                  : "N/A"}
               </span>
             }
           />
+
           <Detail
-            label="Payment Method"
-            value={student.paymentMode || "N/A"}
+            label="Paid Fees"
+            value={
+              <span className="flex items-center gap-1">
+                <FaRupeeSign className="text-gray-700" />
+                {fee.paidFees != null
+                  ? Number(fee.paidFees).toLocaleString("en-IN")
+                  : fee.amount != null
+                  ? Number(fee.amount).toLocaleString("en-IN")
+                  : "N/A"}
+              </span>
+            }
           />
-          <Detail label="Email" value={student.email || "N/A"} />
+
+          <Detail
+            label="Pending Fees"
+            value={
+              <span className="flex items-center gap-1">
+                <FaRupeeSign className="text-gray-700" />
+                {fee.pendingFees != null
+                  ? Number(fee.pendingFees).toLocaleString("en-IN")
+                  : fee.pending != null
+                  ? Number(fee.pending).toLocaleString("en-IN")
+                  : "N/A"}
+              </span>
+            }
+          />
+
+          <Detail
+            label="Payment Date"
+            value={formatDate(fee.date || fee.paymentDate)}
+          />
+
+          <Detail label="Payment Method" value={fee.paymentMode || "N/A"} />
+
+          <Detail label="Note" value={fee.note || "N/A"} />
         </div>
       </div>
     </Modal>
   );
 };
 
-export default ViewStudentDetail;
+export default ViewFeesDetail;
 
 /* Reusable Component */
 const Detail = ({ label, value }) => (

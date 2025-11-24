@@ -22,6 +22,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
   const [dateOfJoining, setDateOfJoining] = useState("");
   const [dateOfEnd, setDateOfEnd] = useState("");
   const [enrolledFees, setEnrolledFees] = useState("");
+  const [paymentMode, setPaymentMode] = useState("");
 
   // ---- ERROR STATE OBJECT ---- //
   const [errors, setErrors] = useState({});
@@ -56,6 +57,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
         setCourseid(s.courseId || "");
         setDateOfJoining(s.dateOfJoining ? s.dateOfJoining.split("T")[0] : "");
         setDateOfEnd(s.dateOfEnd ? s.dateOfEnd.split("T")[0] : "");
+        setPaymentMode(s.paymentMode || "");
         setEnrolledFees(s.enrolledFees || "");
       }
     } catch (error) {
@@ -99,6 +101,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
         dateOfJoining,
         ...(dateOfEnd && { dateOfEnd }),
         ...(enrolledFees && { enrolledFees }),
+        ...(paymentMode && { paymentMode }),
       });
 
       toast.success("Student updated successfully! 🎉");
@@ -119,7 +122,6 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
           formatted[err.fields] = err.message;
         });
         console.log(formatted);
-        
 
         setErrors(formatted);
         toast.error("Validation failed!");
@@ -273,7 +275,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
                 </option>
               ))}
             </select>
-            <FaChevronDown className="absolute right-0 top-3 text-gray-500" />
+            {/* <FaChevronDown className="absolute right-0 top-3 text-gray-500" /> */}
           </div>
           {errors.courseId && (
             <p className="text-red-500 text-xs mt-1">{errors.courseId}</p>
@@ -313,12 +315,35 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
           </label>
           <input
             value={enrolledFees}
-            onChange={(e) => setEnrolledFees(e.target.value)}
-            type="number"
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^0-9]/g, "");
+              setEnrolledFees(raw);
+            }}
+            type="text"
             className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
           {errors.enrolledFees && (
             <p className="text-red-500 text-xs mt-1">{errors.enrolledFees}</p>
+          )}
+
+          {/* ⭐ PAYMENT MODE DROPDOWN (added here) */}
+          {enrolledFees && (
+            <div>
+              <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+                Payment Mode
+              </label>
+              <select
+                value={paymentMode}
+                onChange={(e) => setPaymentMode(e.target.value)}
+                className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
+              >
+                <option value="">Select Payment Method</option>
+                <option value="CASH">CASH</option>
+                <option value="UPI">UPI</option>
+                <option value="CARD">CARD</option>
+                <option value="BANK_TRANSFER">BANK_TRANSFER</option>
+              </select>
+            </div>
           )}
 
           {/* BUTTONS */}

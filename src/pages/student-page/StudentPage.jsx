@@ -1,6 +1,6 @@
 // Final StudentPage.jsx with Pagination + Search Pagination
 import React, { useEffect, useRef, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaRupeeSign, FaSearch } from "react-icons/fa";
 import AddStudent from "../../components/features/student/AddStudent";
 import EditStudent from "../../components/features/student/EditStudent";
 import DeleteStudent from "../../components/features/student/DeleteStudent";
@@ -252,58 +252,59 @@ const StudentPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {studentsdata.length > 0 ? (
-                studentsdata.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">{student.name}</td>
-                    <td className="px-4 py-3">{student.fatherName}</td>
-                    <td className="px-4 py-3">{student.gender}</td>
-                    <td className="px-4 py-3">{student.mobileNumber}</td>
-                    <td className="px-4 py-3">{toDDMMYYYY(student.DOB)}</td>
-                    <td className="px-4 py-3">
-                      {student.course?.courseName || "N/A"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {student.enrolledFees || "N/A"}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleViewClick(student)}
-                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                        >
-                          <GrView />
-                        </button>
+              {studentsdata.length > 0
+                ? studentsdata.map((student) => (
+                    <tr key={student.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">{student.name}</td>
+                      <td className="px-4 py-3">{student.fatherName}</td>
+                      <td className="px-4 py-3">{student.gender}</td>
+                      <td className="px-4 py-3">{student.mobileNumber}</td>
+                      <td className="px-4 py-3">{toDDMMYYYY(student.DOB)}</td>
+                      <td className="px-4 py-3">
+                        {student.course?.courseName || "N/A"}
+                      </td>
+                      <td className="px-4 py-3 flex items-center">
+                        <FaRupeeSign className="text-sm" />{" "}
+                        {student.enrolledFees
+                          ? Number(student.enrolledFees).toLocaleString("en-IN")
+                          : "N/A"}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleViewClick(student)}
+                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                          >
+                            <GrView />
+                          </button>
 
-                        <button
-                          onClick={() => handleEditClick(student.id)}
-                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                        >
-                          <TiEdit />
-                        </button>
+                          <button
+                            onClick={() => handleEditClick(student.id)}
+                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                          >
+                            <TiEdit />
+                          </button>
 
-                        <button
-                          onClick={() => handleDeleteClick(student.id)}
-                          className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
-                        >
-                          <RiDeleteBin6Line />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                !loading && (
-                  <tr>
-                    <td
-                      colSpan="10"
-                      className="text-center py-6 text-gray-500"
-                    >
-                      {error || "No students available"}
-                    </td>
-                  </tr>
-                )
-              )}
+                          <button
+                            onClick={() => handleDeleteClick(student.id)}
+                            className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
+                          >
+                            <RiDeleteBin6Line />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : !loading && (
+                    <tr>
+                      <td
+                        colSpan="10"
+                        className="text-center py-6 text-gray-500"
+                      >
+                        {error || "No students available"}
+                      </td>
+                    </tr>
+                  )}
             </tbody>
           </table>
         </div>
@@ -314,7 +315,6 @@ const StudentPage = () => {
       {/* ---------------------- */}
       {pagination.totalPage > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
-
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -336,7 +336,9 @@ const StudentPage = () => {
       )}
 
       {/* Modals */}
-      {showModal && <AddStudent isOpen={showModal} onClose={handleModalClose} />}
+      {showModal && (
+        <AddStudent isOpen={showModal} onClose={handleModalClose} />
+      )}
       {showModal1 && (
         <EditStudent
           isOpen1={showModal1}

@@ -40,7 +40,7 @@ const LoginPage = () => {
 
           {/* TEXT INSIDE IMAGE */}
           <div className="relative text-white p-6 z-10">
-            <h1 className="text-3xl font-bold mb-2">Create your Account</h1>
+            <h1 className="text-3xl font-bold mb-2">Login Admin Account</h1>
             <p className="text-sm text-gray-200">
               Lorem ipsum dolor sit amet consectetur.
             </p>
