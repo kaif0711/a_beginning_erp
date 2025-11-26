@@ -1,5 +1,5 @@
+// ViewCertificateDetail.jsx
 import { useEffect } from "react";
-import { FaRupeeSign } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import Modal from "react-modal";
 
@@ -11,18 +11,18 @@ const formatDate = (dateString) => {
   return `${day}-${month}-${year}`;
 };
 
-const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
+const ViewCertificateDetail = ({ isOpen, onClose, certificate }) => {
   useEffect(() => {
-    document.body.style.overflow = isOpen3 ? "hidden" : "auto";
+    document.body.style.overflow = isOpen ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
-  }, [isOpen3]);
+  }, [isOpen]);
 
-  if (!student) return null;
+  if (!certificate) return null;
 
   return (
     <Modal
-      isOpen={isOpen3}
-      onRequestClose={() => onClose3(false)}
+      isOpen={isOpen}
+      onRequestClose={() => onClose(false)}
       className="
         bg-white p-6 rounded-2xl shadow-lg 
         w-[95%] sm:w-[90%] md:w-[70%] lg:w-[50%]
@@ -33,7 +33,7 @@ const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
     >
       {/* Close button */}
       <button
-        onClick={() => onClose3(false)}
+        onClick={() => onClose(false)}
         className="absolute top-4 left-4 cursor-pointer text-xl"
       >
         <RxCross2 />
@@ -41,49 +41,45 @@ const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
 
       {/* Heading */}
       <h1 className="text-2xl font-semibold text-center mb-6">
-        Student Details
+        Certificate Details
       </h1>
 
       {/* Scrollable Content */}
       <div className="overflow-y-auto max-h-[70vh] px-2 space-y-4">
-        {/* GRID VIEW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <Detail label="Student Name" value={student.name} />
-          <Detail label="Father's Name" value={student.fatherName} />
-
-          <Detail label="Gender" value={student.gender} />
-          <Detail label="Mobile Number" value={student.mobileNumber} />
-
-          <Detail label="Father Number" value={student.fatherNumber} />
-
-          <Detail label="Date of Birth" value={formatDate(student.DOB)} />
-          <Detail label="Course" value={student.course?.courseName || "N/A"} />
 
           <Detail
-            label="Date of Joining"
-            value={formatDate(student.dateOfJoining)}
+            label="Student Name"
+            value={certificate.student?.name || certificate.studentName || "N/A"}
           />
-          <Detail label="Date of End" value={formatDate(student.dateOfEnd)} />
 
           <Detail
-            label="Enrolled Fees"
-            value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
-                {student.enrolledFees
-                          ? Number(student.enrolledFees).toLocaleString("en-IN")
-                          : "N/A"}
-              </span>
-            }
+            label="Phone Number"
+            value={certificate.student?.mobileNumber || certificate.mobileNumber || "N/A"}
           />
-          <Detail label="Email" value={student.email || "N/A"} />
+
+          <Detail
+            label="Email"
+            value={certificate.student?.email || certificate.email || "N/A"}
+          />
+
+          <Detail
+            label="Course Name"
+            value={certificate.course?.courseName || certificate.courseName || "N/A"}
+          />
+
+          <Detail
+            label="Issue Date"
+            value={certificate.createdAt ? formatDate(certificate.createdAt) : "N/A"}
+          />
+
         </div>
       </div>
     </Modal>
   );
 };
 
-export default ViewStudentDetail;
+export default ViewCertificateDetail;
 
 /* Reusable Component */
 const Detail = ({ label, value }) => (

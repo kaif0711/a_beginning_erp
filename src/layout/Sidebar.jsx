@@ -5,10 +5,14 @@ import {
   FaFileInvoice,
   FaListAlt,
   FaSignOutAlt,
+  FaBook,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import Api from "../utils/apiClient";
+import { PiCertificateFill } from "react-icons/pi";
+import { MdWatchLater } from "react-icons/md";
+import { RiFileTextFill } from "react-icons/ri";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -71,8 +75,8 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
-                <FaListAlt className="text-lg" />
-                <span className="font-medium">Student</span>
+                <FaUsers className="text-lg" />
+                <span className="font-medium">Students</span>
               </NavLink>
             </li>
 
@@ -85,7 +89,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
-                <FaUsers className="text-lg" />
+                <FaBook  className="text-lg" />
                 <span className="font-medium">Courses</span>
               </NavLink>
             </li>
@@ -113,7 +117,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
-                <FaMoneyBill className="text-lg" />
+                <PiCertificateFill className="text-lg" />
                 <span className="font-medium">Certificates</span>
               </NavLink>
             </li>
@@ -127,7 +131,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
-                <FaListAlt className="text-lg" />
+                <RiFileTextFill className="text-lg" />
                 <span className="font-medium">Internship Letters</span>
               </NavLink>
             </li>
@@ -141,7 +145,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : " hover:text-black"}`
                 }
               >
-                <FaListAlt className="text-lg" />
+                <MdWatchLater  className="text-lg" />
                 <span className="font-medium">Leave Students</span>
               </NavLink>
             </li>

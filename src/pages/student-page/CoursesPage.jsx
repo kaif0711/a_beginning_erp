@@ -161,7 +161,7 @@ const CoursesPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto my-10 px-4 sm:px-8 md:px-16 lg:px-20 overflow-hidden">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Courses Page</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Courses</h1>
 
       {/* Search + Add */}
       <div className="flex items-center gap-4 mb-6">
@@ -183,7 +183,7 @@ const CoursesPage = () => {
 
         <button
           onClick={() => setShowModal(true)}
-          className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md"
+          className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
         >
           Add Course
         </button>
@@ -202,7 +202,7 @@ const CoursesPage = () => {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
           ref={scrollRef}
           onMouseDown={handleMouseDown}
@@ -210,7 +210,6 @@ const CoursesPage = () => {
           onMouseLeave={handleMouseLeave}
           onMouseMove={handleMouseMove}
           className="overflow-x-auto"
-          style={{ cursor: isDragging ? "grabbing" : "grab" }}
         >
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">

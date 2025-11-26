@@ -7,6 +7,8 @@ import Api from "../../utils/apiClient";
 // ==== MODALS (adjust path if needed) ====
 import AddFeesEntry from "../../components/features/fees/AddFees";
 import ViewFeesDetail from "../../components/features/fees/ViewFees";
+import { TbSend2 } from "react-icons/tb";
+import { toast } from "react-toastify";
 
 const FeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -120,6 +122,19 @@ const FeesPage = () => {
     setShowViewModal(true);
   };
 
+  const handleSendFeesSlipt = async (fee) => {
+    try {
+      const res = await Api.post(`/fees/send-fees-reciept?id=${fee.id}`);
+      toast.success("Fees receipt sent successfully!");
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message ||
+        error?.response?.data?.errors?.[0]?.message ||
+        "Failed to send fees receipt.";
+      toast.error(msg);
+    }
+  };
+
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowViewModal(false);
@@ -171,7 +186,7 @@ const FeesPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto my-10 px-4 sm:px-8 md:px-16 lg:px-20 overflow-hidden">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Fees Page</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Fees</h1>
 
       {/* Search + Add */}
       <div className="flex items-center gap-4 mb-6">
@@ -193,7 +208,7 @@ const FeesPage = () => {
 
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md"
+          className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
         >
           Add Fees Entry
         </button>
@@ -212,7 +227,7 @@ const FeesPage = () => {
       )}
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
           ref={scrollRef}
           onMouseDown={handleMouseDown}
@@ -297,12 +312,20 @@ const FeesPage = () => {
 
                       {/* Action */}
                       <td className="px-4 py-3">
-                        <button
-                          onClick={() => handleViewClick(fee)}
-                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                        >
-                          <GrView />
-                        </button>
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() => handleViewClick(fee)}
+                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                          >
+                            <GrView />
+                          </button>
+                          <button
+                            onClick={() => handleSendFeesSlipt(fee)}
+                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                          >
+                            <TbSend2 />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
