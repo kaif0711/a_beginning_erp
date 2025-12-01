@@ -54,6 +54,7 @@ const AddCourse = ({ isOpen, onClose }) => {
     } catch (error) {
       const data = error?.response?.data;
       console.log(data);
+      
       // Direct message
       if (data?.message && !Array.isArray(data?.errors)) {
         toast.error(data.message);

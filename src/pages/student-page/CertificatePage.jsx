@@ -1,14 +1,8 @@
 // CertificatePage.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import Api from "../../utils/apiClient";
-
-// 🔹 View student detail modal
-import ViewStudentDetail from "../../components/features/student/ViewStudentDetails";
-
-// 🔹 ADD — Add Student modal
-import AddStudent from "../../components/features/student/AddStudent";
 import AddCertificateEntry from "../../components/features/certificate/AddCertificate";
 import { TbSend2 } from "react-icons/tb";
 import { toast } from "react-toastify";
@@ -30,35 +24,12 @@ const CertificatePage = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  // Drag scroll
-  const scrollRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseMove = (e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    scrollRef.current.scrollLeft = scrollLeft - (x - startX);
-  };
-
   const toDDMMYYYY = (dateString) => {
     const [yyyy, mm, dd] = dateString.split("T")[0].split("-");
     return `${dd}-${mm}-${yyyy}`;
   };
 
-  // =========================================================
-  // 🔹 Fetch Certificates   API → certificate/list
-  // =========================================================
+  // Fetch Certificates   API → certificate/list
   const fetchCertificates = async () => {
     setLoading(true);
     setError("");
@@ -83,9 +54,7 @@ const CertificatePage = () => {
     }
   };
 
-  // =========================================================
-  // 🔹 Search Certificates   API → certificate/search
-  // =========================================================
+  // Search Certificates   API → certificate/search
   const searchCertificates = async (query) => {
     if (!query.trim()) return fetchCertificates();
 
@@ -132,7 +101,7 @@ const CertificatePage = () => {
     }
   };
 
-  // 🔹 Modal close + refresh list
+  // Modal close + refresh list
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowViewModal(false);
@@ -178,7 +147,7 @@ const CertificatePage = () => {
         Certificate Students
       </h1>
 
-      {/* 🔹 Search + Add Student */}
+      {/* Search + Add Student */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 relative">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -196,7 +165,7 @@ const CertificatePage = () => {
           />
         </div>
 
-        {/* 🔥 ADD STUDENT BUTTON */}
+        {/* ADD STUDENT BUTTON */}
         <button
           onClick={() => setShowAddModal(true)}
           className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
@@ -220,11 +189,6 @@ const CertificatePage = () => {
       {/* TABLE */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
           className="overflow-x-auto"
         >
           <table className="min-w-full divide-y divide-gray-200">
@@ -327,12 +291,12 @@ const CertificatePage = () => {
         </div>
       )}
 
-      {/* 🔹 Add Student Modal */}
+      {/* Add Student Modal */}
       {showAddModal && (
         <AddCertificateEntry isOpen={showAddModal} onClose={handleModalClose} />
       )}
 
-      {/* 🔹 View Detail Modal */}
+      {/* View Detail Modal */}
       {showViewModal && (
         <ViewCertificateDetail
           isOpen={showViewModal}

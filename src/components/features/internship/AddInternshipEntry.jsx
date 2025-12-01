@@ -1,6 +1,5 @@
-// AddFeesEntry.jsx
+// AddInternshipEntry.jsx
 import { useEffect, useState } from "react";
-import { FaChevronDown, FaRupeeSign } from "react-icons/fa";
 import { RxCross2 } from "react-icons/rx";
 import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
@@ -8,7 +7,7 @@ import { toast } from "react-toastify";
 
 Modal.setAppElement("#root");
 
-const AddFeesEntry = ({ isOpen, onClose }) => {
+const AddInternshipEntry = ({ isOpen, onClose }) => {
   const [students, setStudents] = useState([]);
   const [filtered, setFiltered] = useState([]);
 
@@ -17,17 +16,14 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [courseName, setCourseName] = useState("");
-  const [totalFees, setTotalFees] = useState("");
-  const [alreadyPaid, setAlreadyPaid] = useState(0);
-  const [paidFees, setPaidFees] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [paymentMode, setPaymentMode] = useState(""); // ⭐ default
-  console.log(paymentMode);
+  // Manual inputs only
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const [note, setNote] = useState("");
   const [errors, setErrors] = useState({});
-
-  console.log(errors);
 
   useEffect(() => {
     fetchStudents();
@@ -35,15 +31,16 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
 
   const fetchStudents = async () => {
     try {
-      const res = await Api.get("/student/list");
+      const res = await Api.get("/student/search?q=");
       const list = res?.data?.data?.students || [];
       setStudents(list);
       setFiltered(list);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.log(err);
     }
   };
 
+  // Lock scroll
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
@@ -64,6 +61,7 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
   const selectStudent = async (stu) => {
     setQuery(stu.name);
     setStudentId(stu.id);
+    setCourseId(stu.courseId);
     setFiltered([]);
     setErrors({});
 
@@ -71,14 +69,14 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
       const res = await Api.get(`/student/details?id=${stu.id}`);
       const data = res.data?.data;
 
-      setCourseId(data.courseId);
+      if (data?.course) setCourseName(data.course.courseName);
+      setPhone(data?.mobileNumber || "");
+      setEmail(data?.email || "");
 
-      if (data?.course) {
-        setCourseName(data.course.courseName);
-        setTotalFees(data.course.coursePrice);
-      }
+      // NO auto-fill for start/end date
+      setStartDate("");
+      setEndDate("");
 
-      setAlreadyPaid(data.totalPaid || 0);
     } catch (e) {
       console.log(e);
     }
@@ -87,13 +85,12 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
   const resetForm = () => {
     setQuery("");
     setStudentId("");
-    setCourseId("");
     setCourseName("");
-    setTotalFees("");
-    setAlreadyPaid(0);
-    setPaidFees("");
-    setPaymentMode("");
-    setNote("");
+    setCourseId("");
+    setPhone("");
+    setEmail("");
+    setStartDate("");
+    setEndDate("");
     setErrors({});
   };
 
@@ -102,78 +99,28 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
     onClose && onClose();
   };
 
-  const handleAddFees = async () => {
-    let newErrors = {};
-
-    if (!studentId) {
-      newErrors.student = "Select a student";
-    }
-
-    if (!paidFees) {
-      newErrors.paidFees = "Enter paid fees";
-    }
-
-    let pending = Number(totalFees) - Number(alreadyPaid);
-
-    if (pending <= 0) {
-      newErrors.paidFees = "Payment exceeds total course fee";
-      setErrors(newErrors);
-      return;
-    }
-
-    if (Number(paidFees) <= 0) {
-      newErrors.paidFees = "Amount must be greater than 0";
-      setErrors(newErrors);
-      return;
-    }
-
-    if (Number(paidFees) > pending) {
-      newErrors.paidFees = "Payment exceeds total course fee";
-      setErrors(newErrors);
-      return;
-    }
-
-    setErrors({});
-
+  const handleAddInternship = async () => {
     try {
-      await Api.post("/fees/create", {
+      await Api.post("/intershipletter/create", {
         studentId,
         courseId,
-        paymentMode,
-        amount: paidFees,
-        ...(note && { note }),
+        courseName,
+        phone,
+        email,
+        startDate,
+        endDate,
       });
 
-      toast.success("Fees entry added successfully!");
+      toast.success("Internship letter generated successfully!");
       handleClose();
     } catch (error) {
-      setErrors({
-        paidFees:
-          error?.response?.data?.message ||
-          error?.response?.data?.errors?.[0]?.message,
-        student:
-          error?.response?.data?.message ||
-          error?.response?.data?.errors?.[0]?.message,
-        paymentMode:
-          error?.response?.data?.message ||
-          error?.response?.data?.errors?.[0]?.message,
-      });
       const msg =
         error?.response?.data?.message ||
         error?.response?.data?.errors?.[0]?.message ||
         "Something went wrong";
 
-      if (msg === "amount must be greater than 0") {
-        setErrors({ paidFees: "Amount must be greater than 0" });
-        return;
-      }
-
-      if (msg === "Payment exceeds total course fee.") {
-        setErrors({ paidFees: "Payment exceeds total course fee" });
-        return;
-      }
-
-      toast.error("Something went wrong!");
+      toast.error(msg);
+      setErrors({ form: msg });
     }
   };
 
@@ -198,16 +145,15 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
       </button>
 
       <div className="pt-5 text-2xl font-semibold">
-        <h1>Add Fees Entry</h1>
+        <h1>Add Internship Letter</h1>
       </div>
 
-      {/* Form */}
       <div className="mx-2 sm:mx-4 overflow-y-auto max-h-[70vh] pb-6 mt-5 pr-2">
+
         {/* STUDENT SEARCH */}
         <label className="text-md text-gray-700 font-semibold block mb-1">
           Student Name
         </label>
-
         <input
           type="text"
           value={query}
@@ -215,10 +161,6 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
           className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
           placeholder="Search student..."
         />
-
-        {errors.student && (
-          <p className="text-red-500 text-xs mt-1">{errors.student}</p>
-        )}
 
         {query && filtered.length > 0 && (
           <div className="border border-gray-300 rounded-lg mt-1 max-h-40 overflow-y-auto bg-white shadow">
@@ -234,6 +176,28 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
           </div>
         )}
 
+        {/* PHONE NUMBER */}
+        <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+          Phone Number
+        </label>
+        <input
+          type="text"
+          value={phone}
+          readOnly
+          className="w-full border bg-gray-100 border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+        />
+
+        {/* EMAIL */}
+        <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+          Email
+        </label>
+        <input
+          type="text"
+          value={email}
+          readOnly
+          className="w-full border bg-gray-100 border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+        />
+
         {/* COURSE NAME */}
         <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
           Course Name
@@ -245,74 +209,32 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
           className="w-full border bg-gray-100 border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
         />
 
-        {/* COURSE PRICE */}
+        {/* START DATE */}
         <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
-          Total Fees
+          Start Date
         </label>
-        <div className="w-full border bg-gray-100 border-gray-400 rounded-lg px-3 py-2 text-md flex items-center gap-2">
-          <FaRupeeSign className="text-gray-600" />
-          <input
-            value={totalFees}
-            readOnly
-            className="w-full bg-gray-100 outline-none"
-          />
-        </div>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+        />
 
-        {/* PAID FEES */}
+        {/* END DATE */}
         <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
-          Paid Fees
+          End Date
         </label>
-        <div className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md flex items-center gap-2">
-          <FaRupeeSign className="text-gray-600" />
-          <input
-            value={paidFees}
-            onChange={(e) => setPaidFees(e.target.value)}
-            inputMode="numeric"
-            pattern="[0-9]*"
-            className="w-full outline-none"
-            placeholder="Paid amount"
-          />
-        </div>
-
-        {errors.paidFees && (
-          <p className="text-red-500 text-xs mt-1">{errors.paidFees}</p>
-        )}
-
-        {/* PAYMENT MODE DROPDOWN (added here) */}
-        <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
-          Payment Mode
-        </label>
-        <select
-          value={paymentMode}
-          onChange={(e) => setPaymentMode(e.target.value)}
-          className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
-        >
-          <option>Select payment mode</option>
-          <option value="CASH">CASH</option>
-          <option value="UPI">UPI</option>
-          <option value="CARD">CARD</option>
-          <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-        </select>
-        {errors.paymentMode && (
-          <p className="text-red-500 text-xs mt-1">{errors.paymentMode}</p>
-        )}
-
-        {/* NOTE */}
-        <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
-          Note
-        </label>
-        <textarea
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none resize-none"
-          rows={3}
-          placeholder="Add note (optional)"
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
         />
 
         {/* BUTTONS */}
         <div className="flex gap-4 justify-end mt-5">
           <button
-            onClick={handleAddFees}
+            onClick={handleAddInternship}
             className="bg-primary hover:bg-white hover:text-primary hover:border hover:border-primary px-6 py-2 text-white font-semibold rounded-xl cursor-pointer"
           >
             Add
@@ -329,4 +251,4 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddFeesEntry;
+export default AddInternshipEntry;

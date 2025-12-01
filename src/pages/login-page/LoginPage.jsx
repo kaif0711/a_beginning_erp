@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import BgImage from "../../assets/images/bg-login3.jpg";
 import logo from "../../assets/images/logo1.png";
 import Api from "../../utils/apiClient";
+import { CiLock, CiUser } from "react-icons/ci";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -33,6 +34,8 @@ const LoginPage = () => {
     try {
       const data1 = await Api.post("/admin/login", { username, password });
 
+      console.log(data1);
+      
       if (data1.status === 200) {
         localStorage.setItem("userName", data1.data.data?.adminData?.username);
         localStorage.setItem("accessToken", data1.data.data?.accessToken);
@@ -47,13 +50,10 @@ const LoginPage = () => {
 
   return (
     <div className="h-screen w-screen bg-gradient-to-r from-[#025b6f] to-[#01343f] flex justify-center items-center px-4">
-
       {/* MAIN WHITE CARD */}
       <div className="w-full max-w-6xl h-auto md:h-[75%] bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
-
         {/* LEFT SIDE IMAGE BOX */}
         <div className="w-full md:w-1/2 p-4 md:p-6 relative flex items-end justify-start">
-
           <div className="absolute top-2 left-2 right-2 bottom-2 md:top-3 md:left-3 md:right-auto md:bottom-auto h-[98%] md:h-[96%] md:inset-0 rounded-l-2xl md:rounded-l-3xl overflow-hidden">
             <img
               src={BgImage}
@@ -93,13 +93,12 @@ const LoginPage = () => {
           <h2 className="text-3xl font-semibold text-center mb-10">Sign In</h2>
 
           <form onSubmit={handleLogin} className="space-y-5">
-
             {/* USERNAME INPUT */}
-            <div>
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Your Username"
-                className={`w-full border px-4 py-2 rounded-lg ${
+                className={`w-full border px-10 py-2 rounded-lg ${
                   errors.username ? "border-red-500" : "border-gray-300"
                 }`}
                 value={username}
@@ -108,17 +107,18 @@ const LoginPage = () => {
                   setErrors({ ...errors, username: "" });
                 }}
               />
+              <CiUser className="absolute top-3 left-3 text-xl" />
               {errors.username && (
                 <p className="text-red-500 text-sm mt-1">{errors.username}</p>
               )}
             </div>
 
             {/* PASSWORD INPUT */}
-            <div>
+            <div className="relative">
               <input
                 type="password"
                 placeholder="Password"
-                className={`w-full border px-4 py-2 rounded-lg ${
+                className={`w-full border px-10 py-2 rounded-lg ${
                   errors.password ? "border-red-500" : "border-gray-300"
                 }`}
                 value={password}
@@ -127,6 +127,7 @@ const LoginPage = () => {
                   setErrors({ ...errors, password: "" });
                 }}
               />
+              <CiLock className="absolute top-3 left-3 text-xl" />
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
@@ -145,7 +146,6 @@ const LoginPage = () => {
               Login Now
             </button>
           </form>
-
         </div>
       </div>
     </div>

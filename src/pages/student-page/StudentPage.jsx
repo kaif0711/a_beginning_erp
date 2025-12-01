@@ -1,5 +1,4 @@
-// Final StudentPage.jsx with Pagination + Search Pagination
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRupeeSign, FaSearch } from "react-icons/fa";
 import AddStudent from "../../components/features/student/AddStudent";
 import EditStudent from "../../components/features/student/EditStudent";
@@ -24,34 +23,14 @@ const StudentPage = () => {
   const [pagination, setPagination] = useState({});
 
   // Modals
-  const [showModal, setShowModal] = useState(false);
-  const [showModal1, setShowModal1] = useState(false);
-  const [showModal2, setShowModal2] = useState(false);
-  const [showModal3, setShowModal3] = useState(false);
-  const [selectedStudentId, setSelectedStudentId] = useState(null);
-  const [viewStudent, setViewStudent] = useState(null);
+  const [showModal, setShowModal] = useState(false);  //add
+  const [showModal1, setShowModal1] = useState(false); //edit
+  const [showModal2, setShowModal2] = useState(false); //delete
+  const [showModal3, setShowModal3] = useState(false); //view
+  const [selectedStudentId, setSelectedStudentId] = useState(null); 
+  const [viewStudent, setViewStudent] = useState(null); 
 
-  // Table drag scroll
-  const scrollRef = useRef(null);
-  // const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
 
-  const handleMouseDown = (e) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseMove = (e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
 
   // Format DOB
   const toDDMMYYYY = (dateString) => {
@@ -131,7 +110,7 @@ const StudentPage = () => {
     else fetchStudents();
   };
 
-  const handleSendFeesSlipt = async (student) => {
+  const handleSendStudentForm = async (student) => {
     try {
       const res = await Api.post(`/fees/send-all-fees-reciept?id=${student}`);
       toast.success("Fees receipt sent successfully!");
@@ -144,9 +123,6 @@ const StudentPage = () => {
     }
   };
 
-  // -------------------------------
-  // ⭐ PAGINATION NUMBER BUTTONS
-  // -------------------------------
   const renderPageNumbers = () => {
     const total = pagination.totalPage;
     const current = pagination.pageNo;
@@ -179,7 +155,6 @@ const StudentPage = () => {
         );
       }
     }
-
     return pages;
   };
 
@@ -228,13 +203,7 @@ const StudentPage = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
           className="overflow-x-auto"
-          // style={{ cursor: isDragging ? "grabbing" : "grab" }}
         >
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">
@@ -308,7 +277,7 @@ const StudentPage = () => {
                           </button>
 
                           <button
-                            onClick={() => handleSendFeesSlipt(student.id)}
+                            onClick={() => handleSendStudentForm(student.id)}
                             className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
                           >
                             <TbSend2 />
@@ -332,9 +301,7 @@ const StudentPage = () => {
         </div>
       </div>
 
-      {/* ---------------------- */}
-      {/* ⭐ NUMBERED PAGINATION */}
-      {/* ---------------------- */}
+      {/* NUMBERED PAGINATION */}
       {pagination.totalPage > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
           <button

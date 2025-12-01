@@ -63,7 +63,7 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
     setPhone(stu.mobileNumber || stu.phone || "");
     setEmail(stu.email || "");
     setFiltered([]);
-    setFieldErrors({});  // clear errors on new selection
+    setFieldErrors({}); 
 
     try {
       const res = await Api.get(`/student/details?id=${stu.id}`);
@@ -111,7 +111,7 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
     // Clear previous errors
     setFieldErrors({});
 
-    // Local validation (optional)
+    // Local validation
     const localErrs = {};
 
     try {

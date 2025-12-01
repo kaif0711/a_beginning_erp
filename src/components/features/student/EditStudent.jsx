@@ -10,7 +10,7 @@ Modal.setAppElement("#root");
 const EditStudent = ({ isOpen1, onClose1, studentId }) => {
   const [courses, setCourses] = useState([]);
 
-  // ---- FORM STATES ---- //
+  // FORM STATES
   const [studentName, setStudentName] = useState("");
   const [studentEmail, setStudentEmail] = useState("");
   const [studentFatherName, setStudentFatherName] = useState("");
@@ -24,10 +24,10 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
   const [enrolledFees, setEnrolledFees] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
 
-  // ---- ERROR STATE OBJECT ---- //
+  // ERROR STATE OBJECT
   const [errors, setErrors] = useState({});
 
-  // ---------- Fetch Courses ----------- //
+  // Fetch Courses
   const fetchCourses = async () => {
     try {
       const res = await Api.get("/course/list");
@@ -37,7 +37,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
     }
   };
 
-  // ---------- Fetch Student Data For Editing ----------- //
+  // Fetch Student Data For Editing
   const fetchStudentDetail = async () => {
     if (!studentId) return;
 
@@ -74,19 +74,19 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
     }
   }, [isOpen1, studentId]);
 
-  // ---- Disable scroll when modal open ---- //
+  // Disable scroll when modal open
   useEffect(() => {
     document.body.style.overflow = isOpen1 ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
   }, [isOpen1]);
 
-  // ---- Handle Close ---- //
+  // Handle Close
   const handleClose = () => {
     onClose1 && onClose1(false);
     setErrors({});
   };
 
-  // ---- UPDATE STUDENT ---- //
+  // UPDATE STUDENT
   const handleUpdateStudent = async () => {
     setErrors({});
 
@@ -326,7 +326,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
             <p className="text-red-500 text-xs mt-1">{errors.enrolledFees}</p>
           )}
 
-          {/* ⭐ PAYMENT MODE DROPDOWN (added here) */}
+          {/* PAYMENT MODE DROPDOWN */}
           {enrolledFees && (
             <div>
               <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">

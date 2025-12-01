@@ -103,7 +103,7 @@ const ViewLeaveStudentDetail = ({ isOpen, onClose, leaveStudent  }) => {
             }
           />
 
-          {/* Optional extra detail: leave date or reason */}
+          {/* leave date */}
           <Detail
             label="Leave Date"
             value={formatDate(leaveStudent.createdAt || leaveStudent.createdAt) }

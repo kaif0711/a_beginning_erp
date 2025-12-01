@@ -1,5 +1,4 @@
-// LeaveStudentsPage.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import Api from "../../utils/apiClient";
@@ -25,29 +24,7 @@ const LeaveStudentsPage = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState(null);
 
-  // Table drag scroll
-  const scrollRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseMove = (e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  // ===== Fetch leave-student list with pagination =====
+  // Fetch leave-student list with pagination
   const fetchLeaves = async () => {
     setLoading(true);
     setError("");
@@ -72,7 +49,7 @@ const LeaveStudentsPage = () => {
     }
   };
 
-  // ===== Search with pagination =====
+  // Search with pagination 
   const searchLeaves = async (query) => {
     if (!query.trim()) {
       fetchLeaves();
@@ -199,11 +176,6 @@ const LeaveStudentsPage = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
           className="overflow-x-auto"
         >
           <table className="min-w-full divide-y divide-gray-200">

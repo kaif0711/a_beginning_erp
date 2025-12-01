@@ -1,10 +1,9 @@
 // FeesPage.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRupeeSign, FaSearch } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import Api from "../../utils/apiClient";
 
-// ==== MODALS (adjust path if needed) ====
 import AddFeesEntry from "../../components/features/fees/AddFees";
 import ViewFeesDetail from "../../components/features/fees/ViewFees";
 import { TbSend2 } from "react-icons/tb";
@@ -26,28 +25,6 @@ const FeesPage = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedFee, setSelectedFee] = useState(null);
 
-  // Table drag scroll
-  const scrollRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseMove = (e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
-
   // Format Date (DD-MM-YYYY)
   const toDDMMYYYY = (dateString) => {
     if (!dateString) return "N/A";
@@ -55,7 +32,7 @@ const FeesPage = () => {
     return `${dd}-${mm}-${yyyy}`;
   };
 
-  // ===== Fetch fees with pagination =====
+  // Fetch fees with pagination
   const fetchStudents = async () => {
     setLoading(true);
     setError("");
@@ -64,7 +41,6 @@ const FeesPage = () => {
       const fees = res.data?.data?.fees || [];
       const pag = res.data?.data?.pagination || {};
 
-      // ➤ CHANGE: If current page > total pages (after delete), reset page to last valid
       if (pag.totalPage && page > pag.totalPage) {
         setPage(pag.totalPage);
       }
@@ -81,7 +57,7 @@ const FeesPage = () => {
     }
   };
 
-  // ===== Search with pagination =====
+  // Search with pagination
   const searchStudents = async (query) => {
     if (!query.trim()) {
       fetchStudents();
@@ -90,7 +66,6 @@ const FeesPage = () => {
     setLoading(true);
     setError("");
     try {
-      // BACKEND: change URL / query params as per your API
       const res = await Api.get(
         `/fees/search?q=${query}&page=${page}&limit=${limit}`
       );
@@ -113,7 +88,6 @@ const FeesPage = () => {
     } else {
       fetchStudents();
     }
-    // ➤ ADD dependency on page so that when page updates (after reset), fetch fires
   }, [page, searchQuery]);
 
   // Events
@@ -140,14 +114,11 @@ const FeesPage = () => {
     setShowViewModal(false);
     setSelectedFee(null);
 
-    // refresh list after add (or in future edit/delete)
     if (searchQuery.trim()) searchStudents(searchQuery);
     else fetchStudents();
   };
 
-  // -------------------------------
   // PAGINATION NUMBER BUTTONS
-  // -------------------------------
   const renderPageNumbers = () => {
     const total = pagination.totalPage;
     const current = pagination.pageNo;
@@ -229,11 +200,6 @@ const FeesPage = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
           className="overflow-x-auto"
         >
           <table className="min-w-full divide-y divide-gray-200">

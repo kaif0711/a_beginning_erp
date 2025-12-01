@@ -8,14 +8,17 @@ import {
   FaBook,
 } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Api from "../utils/apiClient";
 import { PiCertificateFill } from "react-icons/pi";
 import { MdWatchLater } from "react-icons/md";
 import { RiFileTextFill } from "react-icons/ri";
+import { IoMenu } from "react-icons/io5";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
+
+  const sidebarRef = useRef(null);
 
   const handleLogout = async () => {
     try {
@@ -30,6 +33,19 @@ const Sidebar = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutSide = (e) => {
+      if (open && sidebarRef.current && sidebarRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutSide);
+
+    return () => document.removeEventListener("mousedown", handleClickOutSide);
+  },[open]);
+
+
   return (
     <>
       {/* Mobile toggle button */}
@@ -37,14 +53,21 @@ const Sidebar = () => {
         onClick={() => setOpen(!open)}
         className="sm:hidden fixed top-2 left-4 z-50 bg-white text-primary px-3 py-1 rounded shadow-md"
       >
-        ☰
+        <IoMenu />
       </button>
+
+      {open && (
+        <div className="fixed inset-0 bg-black/40 sm:hidden z-30" onClick={()=>setOpen(false)}></div>
+      )
+
+      }
 
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
         className={`
           bg-[#255267] text-white h-screen fixed top-0 z-40 flex flex-col
-          transition-all duration-300 w-64
+          transition-all duration-300 w-64 overflow-y-auto scrollbar-hide
           ${open ? "left-0" : "-left-64"}
           sm:left-0
         `}
@@ -65,7 +88,6 @@ const Sidebar = () => {
         {/* MENU ITEMS */}
         <nav className="flex-1 mt-4 pl-8">
           <ul className="space-y-1">
-
             {/* Student */}
             <li>
               <NavLink
@@ -89,7 +111,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : "hover:text-black"}`
                 }
               >
-                <FaBook  className="text-lg" />
+                <FaBook className="text-lg" />
                 <span className="font-medium">Courses</span>
               </NavLink>
             </li>
@@ -145,7 +167,7 @@ const Sidebar = () => {
                   ${isActive ? "active-menu" : " hover:text-black"}`
                 }
               >
-                <MdWatchLater  className="text-lg" />
+                <MdWatchLater className="text-lg" />
                 <span className="font-medium">Leave Students</span>
               </NavLink>
             </li>

@@ -1,5 +1,5 @@
 // Final CoursePage.jsx with Pagination + Search Pagination
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRupeeSign, FaSearch } from "react-icons/fa";
 import AddCourse from "../../components/features/courses/AddCourse";
 import EditCourse from "../../components/features/courses/EditCourse";
@@ -29,28 +29,6 @@ const CoursesPage = () => {
   const [showModal3, setShowModal3] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
   const [viewCourse, setViewCourse] = useState(null);
-
-  // Table drag scroll
-  const scrollRef = useRef(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseUp = () => setIsDragging(false);
-  const handleMouseLeave = () => setIsDragging(false);
-  const handleMouseMove = (e) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
 
   // Fetch courses with pagination
   const fetchCourses = async () => {
@@ -204,11 +182,6 @@ const CoursesPage = () => {
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onMouseMove={handleMouseMove}
           className="overflow-x-auto"
         >
           <table className="min-w-full divide-y divide-gray-200">

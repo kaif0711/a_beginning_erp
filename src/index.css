@@ -6,6 +6,15 @@
     --color-tertiary: #0000ff;
 }
 
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  
+  scrollbar-width: none;      
+}
+
 
 /* Sidebar Active Menu Item Styling */
 .active-menu {

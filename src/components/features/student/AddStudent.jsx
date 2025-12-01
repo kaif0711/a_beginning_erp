@@ -10,7 +10,7 @@ Modal.setAppElement("#root");
 const AddStudent = ({ isOpen, onClose }) => {
   const [courses, setCourses] = useState([]);
 
-  // ---- FORM STATES ---- //
+  // FORM STATES 
   const [studentName, setStudentName] = useState("");
   const [studentEmail, setStudentEmail] = useState("");
   const [studentFatherName, setStudentFatherName] = useState("");
@@ -24,10 +24,10 @@ const AddStudent = ({ isOpen, onClose }) => {
   const [enrolledFees, setEnrolledFees] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
 
-  // ---- ERROR STATE OBJECT ---- //
+  // ERROR STATE OBJECT
   const [errors, setErrors] = useState({});
 
-  // ---- Fetch Courses ---- //
+  // Fetch Courses
   const fetchCourses = async () => {
     try {
       const res = await Api.get("/course/list");
@@ -42,13 +42,12 @@ const AddStudent = ({ isOpen, onClose }) => {
     fetchCourses();
   }, []);
 
-  // ---- Disable scroll when modal open ---- //
+  // Disable scroll when modal open
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
   }, [isOpen]);
 
-  // ---- Clear form on close (optional but clean) ---- //
   const resetForm = () => {
     setStudentName("");
     setStudentEmail("");
@@ -67,10 +66,10 @@ const AddStudent = ({ isOpen, onClose }) => {
 
   const handleClose = () => {
     resetForm();
-    onClose && onClose(); // parent me agar onClose={() => setShowModal(false)} hai to sahi chalega
+    onClose && onClose();
   };
 
-  // ---- ADD STUDENT ---- //
+  // ADD STUDENT
   const handleAddStudent = async () => {
     setErrors({}); // reset errors
 
@@ -324,7 +323,8 @@ const AddStudent = ({ isOpen, onClose }) => {
               const raw = e.target.value.replace(/[^0-9.]/g, "");
               setEnrolledFees(raw);
             }}
-            type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
             placeholder="Fees"
           />
@@ -332,7 +332,7 @@ const AddStudent = ({ isOpen, onClose }) => {
             <p className="text-red-500 text-xs mt-1">{errors.enrolledFees}</p>
           )}
 
-          {/* ⭐ PAYMENT MODE DROPDOWN (added here) */}
+          {/* PAYMENT MODE DROPDOWN */}
           {enrolledFees && (
             <div>
               <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
