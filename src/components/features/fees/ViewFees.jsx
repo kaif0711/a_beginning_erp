@@ -58,10 +58,12 @@ const ViewFeesDetail = ({ isOpen3, onClose3, fee }) => {
           <Detail
             label="Total Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-blue-700">
+                <FaRupeeSign />
                 {fee.totalFees != null
                   ? Number(fee.totalFees).toLocaleString("en-IN")
+                  : fee.student.customCourseFees != null
+                  ? Number(fee.student.customCourseFees).toLocaleString("en-IN")
                   : fee.course?.coursePrice != null
                   ? Number(fee.course.coursePrice).toLocaleString("en-IN")
                   : "N/A"}
@@ -72,8 +74,8 @@ const ViewFeesDetail = ({ isOpen3, onClose3, fee }) => {
           <Detail
             label="Paid Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-green-700">
+                <FaRupeeSign />
                 {fee.paidFees != null
                   ? Number(fee.paidFees).toLocaleString("en-IN")
                   : fee.amount != null
@@ -86,8 +88,8 @@ const ViewFeesDetail = ({ isOpen3, onClose3, fee }) => {
           <Detail
             label="Pending Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-red-700 ">
+                <FaRupeeSign />
                 {fee.pendingFees != null
                   ? Number(fee.pendingFees).toLocaleString("en-IN")
                   : fee.pending != null

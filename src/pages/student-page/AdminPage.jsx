@@ -1,149 +1,135 @@
-// CertificatePage.jsx
+// AdminPage.jsx
 import React, { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
-import { GrView } from "react-icons/gr";
 import Api from "../../utils/apiClient";
-import AddCertificateEntry from "../../components/features/certificate/AddCertificate";
-import { TbSend2 } from "react-icons/tb";
+import { TiEdit } from "react-icons/ti";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { GrView } from "react-icons/gr";
 import { toast } from "react-toastify";
-import ViewCertificateDetail from "../../components/features/certificate/ViewCertificateDetail";
-import CertificatePreviewModal from "../../components/features/certificate/CertificatePreviewModal";
 
-const CertificatePage = () => {
+import AddAdmin from "../../components/features/admin/AddAdmin";
+import EditAdmin from "../../components/features/admin/EditAdmin";
+import DeleteAdmin from "../../components/features/admin/DeleteAdmin";
+import ViewAdminDetail from "../../components/features/admin/ViewAdminDetail";
+
+const AdminPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [certData, setCertData] = useState([]);
+  const [adminsData, setAdminsData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Pagination
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [pagination, setPagination] = useState({});
 
-  // Modals
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showModal1, setShowModal1] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
+  const [selectedAdminId, setSelectedAdminId] = useState(null);
+  const [viewAdmin, setViewAdmin] = useState(null);
 
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-
-  const toDDMMYYYY = (dateString) => {
-    if (!dateString) return "N/A";
-    const [yyyy, mm, dd] = dateString.split("T")[0].split("-");
-    return `${dd}-${mm}-${yyyy}`;
-  };
-
-  // Fetch Certificates
-  const fetchCertificates = async () => {
+  // ========================================
+  // FETCH ADMINS
+  // ========================================
+  const fetchAdmins = async () => {
     setLoading(true);
     setError("");
 
     try {
-      const res = await Api.get(
-        `/certificate/list?page=${page}&limit=${limit}`
-      );
-
-      const certs = res.data?.data?.certificates || [];
+      const res = await Api.get(`/admin/list?page=${page}&limit=${limit}`);
+      const admins = res.data?.data?.admins || [];
       const pag = res.data?.data?.pagination || {};
 
-      // FIX: Normalize pagination
+      // FIX: normalize pagination
       setPagination({
         totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
         pageNo: pag.pageNo || pag.page || page,
       });
 
-      setCertData(certs);
+      setAdminsData(admins);
 
-      if (certs.length === 0) setError("No certificate records found");
+      if (admins.length === 0) setError("No admins found");
     } catch (err) {
-      console.error(err);
-      setError("Failed to fetch certificate records.");
+      setError("Failed to fetch admins.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Search Certificates
-  const searchCertificates = async (query) => {
-    if (!query.trim()) return fetchCertificates();
+  // ========================================
+  // SEARCH ADMINS
+  // ========================================
+  const searchAdmins = async (query) => {
+    if (!query.trim()) return fetchAdmins();
 
     setLoading(true);
+    setError("");
+
     try {
       const res = await Api.get(
-        `/certificate/search?q=${query}&page=${page}&limit=${limit}`
+        `/admin/search?q=${query}&page=${page}&limit=${limit}`
       );
 
-      const certs = res.data?.data?.certificates || [];
+      const admins = res.data?.data?.admins || [];
       const pag = res.data?.data?.pagination || {};
 
-      // FIX: Normalize pagination
+      // FIX: normalize pagination
       setPagination({
         totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
         pageNo: pag.pageNo || pag.page || page,
       });
 
-      setCertData(certs);
+      setAdminsData(admins);
 
-      if (certs.length === 0) setError(`No results for "${query}"`);
+      if (admins.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
-      console.error(err);
       setError("Search failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Auto-fetch
+  // Auto reload on page change
   useEffect(() => {
-    if (searchQuery.trim()) searchCertificates(searchQuery);
-    else fetchCertificates();
-  }, [page, searchQuery]);
+    if (searchQuery.trim()) searchAdmins(searchQuery);
+    else fetchAdmins();
+  }, [page]);
 
-  const handleViewClick = (student) => {
-    setSelectedStudent(student);
-    setShowViewModal(true);
+  const handleEditClick = (id) => {
+    setSelectedAdminId(id);
+    setShowModal1(true);
   };
 
-  const handleSendCertificate = async (certificateId) => {
-    try {
-      await Api.post(`/certificate/send-certificate?id=${certificateId}`);
-      toast.success("Certificate sent successfully!");
-    } catch (error) {
-      const msg =
-        error?.response?.data?.message ||
-        error?.response?.data?.errors?.[0]?.message ||
-        "Failed to send certificate.";
-      toast.error(msg);
-    }
+  const handleDeleteClick = (id) => {
+    setSelectedAdminId(id);
+    setShowModal2(true);
   };
 
-  // const handlePreviewClick = (student) => {
-  //   if (!student?.certificateUrl) {
-  //     alert("Certificate not available!");
-  //     return;
-  //   }
-  //   window.open(student.certificateUrl, "_blank");
-  // };
+  const handleViewClick = (admin) => {
+    setViewAdmin(admin);
+    setShowModal3(true);
+  };
 
-const handleModalClose = () => {
-  setShowAddModal(false);
-  setShowDetailModal(false);
-  setShowPreviewModal(false);
-  setSelectedStudent(null);
+  const handleModalClose = () => {
+    setShowModal(false);
+    setShowModal1(false);
+    setShowModal2(false);
+    setShowModal3(false);
+    setSelectedAdminId(null);
 
-  if (searchQuery.trim()) searchCertificates(searchQuery);
-  else fetchCertificates();
-};
+    if (searchQuery.trim()) searchAdmins(searchQuery);
+    else fetchAdmins();
+  };
 
-
-  // Pagination Buttons
   const renderPageNumbers = () => {
     const total = pagination.totalPage;
     const current = pagination.pageNo;
+
     if (!total) return null;
 
     let pages = [];
+
     for (let i = 1; i <= total; i++) {
       if (i === 1 || i === total || Math.abs(i - current) <= 2) {
         pages.push(
@@ -159,20 +145,19 @@ const handleModalClose = () => {
         );
       } else if (i === current - 3 || i === current + 3) {
         pages.push(
-          <span key={`dots-${i}`} className="px-2">
+          <span key={i} className="px-2">
             ...
           </span>
         );
       }
     }
+
     return pages;
   };
 
   return (
     <div className="max-w-7xl mx-auto my-10 px-4 sm:px-8 md:px-16 lg:px-20 overflow-hidden">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Certificate Students
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Admins</h1>
 
       {/* Search + Add */}
       <div className="flex items-center gap-4 mb-6">
@@ -180,26 +165,27 @@ const handleModalClose = () => {
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search students..."
+            placeholder="Search admin..."
             value={searchQuery}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
             onChange={(e) => {
               setPage(1);
               const val = e.target.value;
               setSearchQuery(val);
-              searchCertificates(val);
+              searchAdmins(val);
             }}
           />
         </div>
 
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => setShowModal(true)}
           className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
         >
-          Add Student
+          Add Admin
         </button>
       </div>
 
+      {/* TABLE */}
       {/* TABLE */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div className="overflow-x-auto">
@@ -207,32 +193,26 @@ const handleModalClose = () => {
             <thead className="bg-primary text-white sticky top-0 z-10">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Student Name
+                  Name
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Phone Number
+                  Status
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Email
+                  Created At
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Course Name
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Issue Date
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Action
+                  Actions
                 </th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {/* LOADING */}
+              {/* Loading */}
               {loading && (
                 <tr>
                   <td
-                    colSpan="10"
+                    colSpan="20"
                     className="text-center py-10 text-blue-600 font-semibold"
                   >
                     Loading...
@@ -240,11 +220,11 @@ const handleModalClose = () => {
                 </tr>
               )}
 
-              {/* ERROR */}
+              {/* Error */}
               {!loading && error && (
                 <tr>
                   <td
-                    colSpan="10"
+                    colSpan="20"
                     className="text-center py-10 text-red-500 font-semibold"
                   >
                     {error}
@@ -252,14 +232,14 @@ const handleModalClose = () => {
                 </tr>
               )}
 
-              {/* NO DATA */}
-              {!loading && !error && certData.length === 0 && (
+              {/* No Data */}
+              {!loading && !error && adminsData.length === 0 && (
                 <tr>
                   <td
-                    colSpan="10"
+                    colSpan="20"
                     className="text-center py-10 text-gray-500 font-medium"
                   >
-                    No certificate students available
+                    No admins available
                   </td>
                 </tr>
               )}
@@ -267,59 +247,52 @@ const handleModalClose = () => {
               {/* DATA */}
               {!loading &&
                 !error &&
-                certData.length > 0 &&
-                certData.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50">
+                adminsData.length > 0 &&
+                adminsData.map((admin) => (
+                  <tr key={admin.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{admin.username}</td>
+
                     <td className="px-4 py-3">
-                      {student.student?.name || "N/A"}
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          admin.status === "active"
+                            ? "bg-green-100 text-green-700"
+                            : admin.status === "deActive"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-200 text-gray-700"
+                        }`}
+                      >
+                        {admin.status || "N/A"}
+                      </span>
                     </td>
 
                     <td className="px-4 py-3">
-                      {student.student?.mobileNumber || "N/A"}
+                      {admin.createdAt
+                        ? new Date(admin.createdAt).toLocaleDateString("en-IN")
+                        : "N/A"}
                     </td>
 
                     <td className="px-4 py-3">
-                      {student.student?.email || "N/A"}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {student.course?.courseName || "N/A"}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      {toDDMMYYYY(student.generatedAt)}
-                    </td>
-
-                    <td className="px-4 py-3">
-                      <div className="flex gap-4">
+                      <div className="flex gap-3">
                         <button
-                          onClick={() => handleViewClick(student)}
+                          onClick={() => handleViewClick(admin)}
                           className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
                         >
                           <GrView />
                         </button>
 
                         <button
-                          onClick={() => handleSendCertificate(student.id)}
+                          onClick={() => handleEditClick(admin.id)}
                           className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
                         >
-                          <TbSend2 />
+                          <TiEdit />
                         </button>
 
                         <button
-                          onClick={() => {
-                            if (!student.certificateUrl) return;
-                            setSelectedStudent(student);
-                            setShowPreviewModal(true);
-                          }}
-                          disabled={!student.certificateUrl}
-                          className={`rounded px-3 py-1 text-xs underline ${
-                            student.certificateUrl
-                              ? "bg-primary text-white cursor-pointer"
-                              : "bg-gray-400 cursor-not-allowed"
-                          }`}
+                          onClick={() => handleDeleteClick(admin.id)}
+                          className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
                         >
-                          View
+                          <RiDeleteBin6Line />
                         </button>
                       </div>
                     </td>
@@ -333,7 +306,6 @@ const handleModalClose = () => {
       {/* PAGINATION */}
       {pagination.totalPage > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
-          {/* Prev */}
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -342,10 +314,8 @@ const handleModalClose = () => {
             Prev
           </button>
 
-          {/* Numbered */}
           {renderPageNumbers()}
 
-          {/* Next */}
           <button
             disabled={page >= pagination.totalPage}
             onClick={() => setPage(page + 1)}
@@ -354,7 +324,7 @@ const handleModalClose = () => {
             Next
           </button>
 
-          {/* Smart Jump Dropdown */}
+          {/* 🔥 Smart Jump Dropdown */}
           <select
             value={page}
             onChange={(e) => setPage(Number(e.target.value))}
@@ -365,9 +335,7 @@ const handleModalClose = () => {
               const current = page;
 
               const jumps = [];
-              for (let i = 1; i <= total; i += 5) {
-                jumps.push(i);
-              }
+              for (let i = 1; i <= total; i += 5) jumps.push(i);
 
               const nearby = [current - 1, current, current + 1];
 
@@ -385,28 +353,31 @@ const handleModalClose = () => {
         </div>
       )}
 
-      {/* Modals */}
-      {showAddModal && (
-        <AddCertificateEntry isOpen={showAddModal} onClose={handleModalClose} />
-      )}
-
-      {showViewModal && (
-        <ViewCertificateDetail
-          isOpen={showViewModal}
-          onClose={handleModalClose}
-          certificate={selectedStudent}
+      {/* MODALS */}
+      {showModal && <AddAdmin isOpen={showModal} onClose={handleModalClose} />}
+      {showModal1 && (
+        <EditAdmin
+          isOpen1={showModal1}
+          adminId={selectedAdminId}
+          onClose1={handleModalClose}
         />
       )}
-
-      {showPreviewModal && (
-        <CertificatePreviewModal
-          isOpen={showPreviewModal}
-          onClose={handleModalClose}
-          certificate={selectedStudent}
+      {showModal2 && (
+        <DeleteAdmin
+          isOpen2={showModal2}
+          adminId={selectedAdminId}
+          onClose2={handleModalClose}
+        />
+      )}
+      {showModal3 && (
+        <ViewAdminDetail
+          isOpen3={showModal3}
+          admin={viewAdmin}
+          onClose3={handleModalClose}
         />
       )}
     </div>
   );
 };
 
-export default CertificatePage;
+export default AdminPage;

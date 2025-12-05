@@ -11,9 +11,10 @@ import { NavLink } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Api from "../utils/apiClient";
 import { PiCertificateFill } from "react-icons/pi";
-import { MdWatchLater } from "react-icons/md";
-import { RiFileTextFill } from "react-icons/ri";
+import { MdDashboard, MdWatchLater } from "react-icons/md";
+import { RiAdminFill, RiFileTextFill } from "react-icons/ri";
 import { IoMenu } from "react-icons/io5";
+import { IoIosSettings } from "react-icons/io";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
@@ -21,16 +22,19 @@ const Sidebar = () => {
   const sidebarRef = useRef(null);
 
   const handleLogout = async () => {
-    try {
-      const data = await Api.post("/admin/logout");
-      if (data.status === 200) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        window.location.href = "/login";
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const data = await Api.post("/admin/logout");
+    //   if (data.status === 200) {
+    //     localStorage.removeItem("accessToken");
+    //     localStorage.removeItem("refreshToken");
+    //     window.location.href = "/login";
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    window.location.href = "/login";
   };
 
   useEffect(() => {
@@ -43,8 +47,7 @@ const Sidebar = () => {
     document.addEventListener("mousedown", handleClickOutSide);
 
     return () => document.removeEventListener("mousedown", handleClickOutSide);
-  },[open]);
-
+  }, [open]);
 
   return (
     <>
@@ -57,10 +60,11 @@ const Sidebar = () => {
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/40 sm:hidden z-30" onClick={()=>setOpen(false)}></div>
-      )
-
-      }
+        <div
+          className="fixed inset-0 bg-black/40 sm:hidden z-30"
+          onClick={() => setOpen(false)}
+        ></div>
+      )}
 
       {/* Sidebar */}
       <aside
@@ -88,13 +92,35 @@ const Sidebar = () => {
         {/* MENU ITEMS */}
         <nav className="flex-1 mt-4 pl-8">
           <ul className="space-y-1">
+            {/* Dashboard */}
+            <li>
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
+                }
+              >
+                <MdDashboard className="text-lg" />
+                <span className="font-medium">Dashboard</span>
+              </NavLink>
+            </li>
+
             {/* Student */}
             <li>
               <NavLink
                 to="/students"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : "hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <FaUsers className="text-lg" />
@@ -108,7 +134,11 @@ const Sidebar = () => {
                 to="/courses"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : "hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <FaBook className="text-lg" />
@@ -122,7 +152,11 @@ const Sidebar = () => {
                 to="/fees"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : "hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <FaFileInvoice className="text-lg" />
@@ -136,7 +170,11 @@ const Sidebar = () => {
                 to="/certificates"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : "hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <PiCertificateFill className="text-lg" />
@@ -150,7 +188,11 @@ const Sidebar = () => {
                 to="/internship"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : "hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <RiFileTextFill className="text-lg" />
@@ -164,23 +206,52 @@ const Sidebar = () => {
                 to="/leave"
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-5 py-3 cursor-pointer 
-                  ${isActive ? "active-menu" : " hover:text-black"}`
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : " rounded-full hover:bg-white/20 text-white"
+                  }`
                 }
               >
                 <MdWatchLater className="text-lg" />
                 <span className="font-medium">Leave Students</span>
               </NavLink>
             </li>
+
+            {/* admin  */}
+            <li>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-5 py-3 cursor-pointer 
+                  ${
+                    isActive
+                      ? "active-menu"
+                      : "rounded-full hover:bg-white/20 text-white"
+                  }`
+                }
+              >
+                <RiAdminFill className="text-lg" />
+                <span className="font-medium">Admin</span>
+              </NavLink>
+            </li>
           </ul>
         </nav>
 
-        {/* Logout */}
-        <div className="mt-auto mb-6 pl-15">
-          <button
-            className="flex items-center gap-3 px-5 py-3 bg-[#255267] rounded-full cursor-pointer hover:bg-white hover:text-[#255267] transition"
-            onClick={handleLogout}
+        <div className="mt-auto mb-3 px-15 flex flex-col gap-2">
+          <NavLink
+            to="/setting"
+            className="flex items-center gap-3 px-5 py-3 bg-white/10 rounded-xl hover:bg-white/20 transition text-white"
           >
-            <FaSignOutAlt className="text-lg" />
+            <IoIosSettings className="text-xl" />
+            <span className="font-medium">Settings</span>
+          </NavLink>
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-5 py-3 bg-red-800 hover:bg-red-700 text-white rounded-xl transition"
+          >
+            <FaSignOutAlt className="text-xl" />
             <span className="font-medium">Logout</span>
           </button>
         </div>

@@ -63,7 +63,7 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
     setPhone(stu.mobileNumber || stu.phone || "");
     setEmail(stu.email || "");
     setFiltered([]);
-    setFieldErrors({}); 
+    setFieldErrors({});
 
     try {
       const res = await Api.get(`/student/details?id=${stu.id}`);
@@ -71,9 +71,8 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
 
       setCourseId(data.courseId || "");
       setCourseName(data.course?.courseName || "");
-      const price = data.course?.coursePrice || 0;
+      const price = data.customCourseFees || data.course?.coursePrice || 0;
       setTotalFees(price.toString());
-
       // fetch last paid fees
       try {
         const res2 = await Api.get(`/fees/get-paid-fees?id=${stu.id}`);
@@ -129,7 +128,7 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
     } catch (err) {
       const errs = err?.response?.data?.errors || [];
       const errObj = {};
-      errs.forEach(e => {
+      errs.forEach((e) => {
         errObj[e.fields] = e.message;
       });
       setFieldErrors(errObj);
@@ -246,7 +245,9 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
           />
         </div>
         {fieldErrors.totalPaidFees && (
-          <p className="text-red-500 text-xs mt-1">{fieldErrors.totalPaidFees}</p>
+          <p className="text-red-500 text-xs mt-1">
+            {fieldErrors.totalPaidFees}
+          </p>
         )}
 
         {/* Pending Fees */}
@@ -295,7 +296,6 @@ const AddLeaveStudent = ({ isOpen, onClose }) => {
             Cancel
           </button>
         </div>
-
       </div>
     </Modal>
   );

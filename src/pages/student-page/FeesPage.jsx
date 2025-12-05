@@ -8,6 +8,7 @@ import AddFeesEntry from "../../components/features/fees/AddFees";
 import ViewFeesDetail from "../../components/features/fees/ViewFees";
 import { TbSend2 } from "react-icons/tb";
 import { toast } from "react-toastify";
+import ExportDropdown from "../../components/dropdown/FeesExportPDF";
 
 const FeesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,7 +47,10 @@ const FeesPage = () => {
       }
 
       setFeesData(fees);
-      setPagination(pag);
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
 
       if (fees.length === 0) setError("No fees records found");
     } catch (err) {
@@ -71,7 +75,12 @@ const FeesPage = () => {
       );
       const fees = res.data?.data?.fees || [];
       setFeesData(fees);
-      setPagination(res.data?.data?.pagination || {});
+      const pag = res.data?.data?.pagination || {};
+
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
       if (fees.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
       console.error(err);
@@ -177,6 +186,9 @@ const FeesPage = () => {
           />
         </div>
 
+        {/* Export Dropdown - NEW */}
+        <ExportDropdown />
+
         <button
           onClick={() => setShowAddModal(true)}
           className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
@@ -185,23 +197,9 @@ const FeesPage = () => {
         </button>
       </div>
 
-      {error && !loading && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
-          Loading...
-        </div>
-      )}
-
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
-        <div
-          className="overflow-x-auto"
-        >
+        <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">
               <tr>
@@ -230,81 +228,110 @@ const FeesPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {feesData.length > 0
-                ? feesData.map((fee) => (
-                    <tr key={fee.id} className="hover:bg-gray-50">
-                      {/* Student */}
-                      <td className="px-4 py-3">
-                        {fee.student?.name || "N/A"}
-                      </td>
+              {/* LOADING */}
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-blue-600 font-semibold"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              )}
 
-                      {/* Course */}
-                      <td className="px-4 py-3">
-                        {fee.course?.courseName || "N/A"}
-                      </td>
+              {/* ERROR */}
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-red-500 font-semibold"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
 
-                      {/* Total Fees */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <FaRupeeSign className="text-sm" />
-                          {Number(fee.course?.coursePrice ?? 0).toLocaleString(
-                            "en-IN"
-                          )}
-                        </div>
-                      </td>
+              {/* NO DATA */}
+              {!loading && !error && feesData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-gray-500 font-medium"
+                  >
+                    No fees records available
+                  </td>
+                </tr>
+              )}
 
-                      {/* Paid Fees */}
-                      <td className="px-4 py-3 ">
-                        <div className="flex items-center gap-1">
-                          <FaRupeeSign className="text-sm" />
-                          {Number(fee.amount ?? 0).toLocaleString("en-IN")}
-                        </div>
-                      </td>
+              {/* DATA ROWS */}
+              {!loading &&
+                !error &&
+                feesData.length > 0 &&
+                feesData.map((fee) => (
+                  <tr key={fee.id} className="hover:bg-gray-50">
+                    {/* Student */}
+                    <td className="px-4 py-3">{fee.student?.name || "N/A"}</td>
 
-                      {/* Pending Fees */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <FaRupeeSign className="text-sm" />
-                          {Number(
-                            fee.pending ?? fee.course?.coursePrice - fee.amount
-                          ).toLocaleString("en-IN")}
-                        </div>
-                      </td>
+                    {/* Course */}
+                    <td className="px-4 py-3">
+                      {fee.course?.courseName || "N/A"}
+                    </td>
 
-                      {/* Date */}
-                      <td className="px-4 py-3">
-                        {toDDMMYYYY(fee.date || fee.paymentDate)}
-                      </td>
+                    {/* Total Fees */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 text-blue-800">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(
+                          fee.student?.customCourseFees ?? 0
+                        ).toLocaleString("en-IN")}
+                      </div>
+                    </td>
 
-                      {/* Action */}
-                      <td className="px-4 py-3">
-                        <div className="flex gap-4">
-                          <button
-                            onClick={() => handleViewClick(fee)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <GrView />
-                          </button>
-                          <button
-                            onClick={() => handleSendFeesSlipt(fee)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <TbSend2 />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                : !loading && (
-                    <tr>
-                      <td
-                        colSpan="10"
-                        className="text-center py-6 text-gray-500"
-                      >
-                        {error || "No fees records available"}
-                      </td>
-                    </tr>
-                  )}
+                    {/* Paid Fees */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 text-green-800">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(fee.amount ?? 0).toLocaleString("en-IN")}
+                      </div>
+                    </td>
+
+                    {/* Pending Fees */}
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1 text-red-800">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(
+                          fee.pending ??
+                            fee.student?.customCourseFees - fee.amount
+                        ).toLocaleString("en-IN")}
+                      </div>
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-4 py-3">
+                      {toDDMMYYYY(fee.date || fee.paymentDate)}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-3">
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => handleViewClick(fee)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <GrView />
+                        </button>
+
+                        <button
+                          onClick={() => handleSendFeesSlipt(fee)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <TbSend2 />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -312,7 +339,8 @@ const FeesPage = () => {
 
       {/* NUMBERED PAGINATION */}
       {pagination.totalPage > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-6">
+          {/* Prev */}
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -321,8 +349,10 @@ const FeesPage = () => {
             Prev
           </button>
 
+          {/* Number Buttons */}
           {renderPageNumbers()}
 
+          {/* Next */}
           <button
             disabled={page >= pagination.totalPage}
             onClick={() => setPage(page + 1)}
@@ -330,6 +360,38 @@ const FeesPage = () => {
           >
             Next
           </button>
+
+          {/* 🔥 Smart Jump Dropdown (1,5,10,15 + Nearby Pages) */}
+          <select
+            value={page}
+            onChange={(e) => setPage(Number(e.target.value))}
+            className="border px-3 py-2 rounded bg-white cursor-pointer"
+          >
+            {(() => {
+              const total = pagination.totalPage;
+              const current = page;
+
+              // base jumps: 1,5,10,15,20,25,...
+              const jumps = [];
+              for (let i = 1; i <= total; i += 5) {
+                jumps.push(i);
+              }
+
+              // nearby pages
+              const nearby = [current - 1, current, current + 1];
+
+              // merge unique sorted
+              const options = [...new Set([...jumps, ...nearby])]
+                .filter((p) => p >= 1 && p <= total)
+                .sort((a, b) => a - b);
+
+              return options.map((p) => (
+                <option key={p} value={p}>
+                  Go to Page {p}
+                </option>
+              ));
+            })()}
+          </select>
         </div>
       )}
 

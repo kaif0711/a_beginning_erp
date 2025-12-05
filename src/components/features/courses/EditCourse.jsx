@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
+import DurationUnitDropdown from "../../dropdown/DurationUnitDropdown";
 
 Modal.setAppElement("#root");
 
@@ -99,9 +100,7 @@ const EditCourse = ({ isOpen1, onClose1, courseId }) => {
         <RxCross2 />
       </button>
 
-      <h1 className="text-2xl font-semibold pt-5">
-        Edit Course
-      </h1>
+      <h1 className="text-2xl font-semibold pt-5">Edit Course</h1>
 
       <div className="mt-5 max-h-[70vh] overflow-y-auto pr-2">
         {/* NAME */}
@@ -151,19 +150,10 @@ const EditCourse = ({ isOpen1, onClose1, courseId }) => {
           Course Duration Unit
         </label>
 
-        <div className="w-full border border-gray-400 rounded-lg px-3 py-2 relative">
-          <select
-            value={courseDurationUnit}
-            onChange={(e) => setCourseDurationUnit(e.target.value)}
-            className="w-full bg-white text-gray-800 outline-none cursor-pointer appearance-none"
-          >
-            <option value="">Select Duration Unit</option>
-            <option value="DAYS">DAYS</option>
-            <option value="MONTHS">MONTHS</option>
-            <option value="YEARS">YEARS</option>
-          </select>
-          <FaChevronDown className="absolute right-2 top-3 text-gray-600 pointer-events-none" />
-        </div>
+        <DurationUnitDropdown
+          value={courseDurationUnit}
+          onChange={setCourseDurationUnit}
+        />
         {errors.courseDurationUnit && (
           <p className="text-red-500 text-xs mt-1">
             {errors.courseDurationUnit}

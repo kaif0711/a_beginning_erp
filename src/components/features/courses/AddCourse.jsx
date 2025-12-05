@@ -4,6 +4,8 @@ import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
 import { toast } from "react-toastify";
 import { FaChevronDown } from "react-icons/fa";
+import CustomDropdown from "../../dropdown/Dropdown";
+import DurationUnitDropdown from "../../dropdown/DurationUnitDropdown";
 
 Modal.setAppElement("#root");
 
@@ -54,7 +56,7 @@ const AddCourse = ({ isOpen, onClose }) => {
     } catch (error) {
       const data = error?.response?.data;
       console.log(data);
-      
+
       // Direct message
       if (data?.message && !Array.isArray(data?.errors)) {
         toast.error(data.message);
@@ -75,7 +77,6 @@ const AddCourse = ({ isOpen, onClose }) => {
       toast.error("Something went wrong!");
     }
   };
-  
 
   return (
     <Modal
@@ -152,19 +153,10 @@ const AddCourse = ({ isOpen, onClose }) => {
           Course Duration Unit
         </label>
 
-        <div className="w-full border border-gray-400 rounded-lg px-3 py-2 relative">
-          <select
-            value={courseDurationUnit}
-            onChange={(e) => setCourseDurationUnit(e.target.value)}
-            className="w-full bg-white text-gray-800 outline-none cursor-pointer appearance-none"
-          >
-            <option value="">Select Duration Unit</option>
-            <option value="DAYS">DAYS</option>
-            <option value="MONTHS">MONTHS</option>
-            <option value="YEARS">YEARS</option>
-          </select>
-          <FaChevronDown className="absolute right-2 top-3 text-gray-600 pointer-events-none" />
-        </div>
+        <DurationUnitDropdown
+          value={courseDurationUnit}
+          onChange={setCourseDurationUnit}
+        />
         {errors.courseDurationUnit && (
           <p className="text-red-500 text-sm mt-1">
             {errors.courseDurationUnit}
@@ -182,6 +174,12 @@ const AddCourse = ({ isOpen, onClose }) => {
           rows={3}
           placeholder="Enter course description"
         />
+        {/* <CustomDropdown
+          options={courses.map((c) => ({ value: c.id, label: c.courseName }))}
+          value={courseDescription}
+          onChange={(val) => setCourseDescription(val)}
+          placeholder="Select Course"
+        /> */}
         {errors.courseDescription && (
           <p className="text-red-500 text-sm mt-1">
             {errors.courseDescription}

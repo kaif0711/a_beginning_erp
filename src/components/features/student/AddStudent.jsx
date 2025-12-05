@@ -4,13 +4,16 @@ import { RxCross2 } from "react-icons/rx";
 import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
 import { toast } from "react-toastify";
+import CustomDropdown from "../../dropdown/Dropdown";
+import GenderDropdown from "../../dropdown/Gender";
+import PaymentModeDropdown from "../../dropdown/PaymentModeDropdown";
 
 Modal.setAppElement("#root");
 
 const AddStudent = ({ isOpen, onClose }) => {
   const [courses, setCourses] = useState([]);
 
-  // FORM STATES 
+  // FORM STATES
   const [studentName, setStudentName] = useState("");
   const [studentEmail, setStudentEmail] = useState("");
   const [studentFatherName, setStudentFatherName] = useState("");
@@ -23,6 +26,10 @@ const AddStudent = ({ isOpen, onClose }) => {
   const [dateOfEnd, setDateOfEnd] = useState("");
   const [enrolledFees, setEnrolledFees] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
+
+  const [selectedCourse, setSelectedCourse] = useState(null);
+
+  const [customCourseFees, setCustomCourseFees] = useState("");
 
   // ERROR STATE OBJECT
   const [errors, setErrors] = useState({});
@@ -61,6 +68,7 @@ const AddStudent = ({ isOpen, onClose }) => {
     setDateOfEnd("");
     setEnrolledFees("");
     setPaymentMode("");
+    setCustomCourseFees("");
     setErrors({});
   };
 
@@ -69,9 +77,23 @@ const AddStudent = ({ isOpen, onClose }) => {
     onClose && onClose();
   };
 
+  // ⭐ Auto Calculate End Date
+  const calculateEndDate = (start, duration, unit) => {
+    if (!start || !duration || !unit) return "";
+
+    const date = new Date(start);
+
+    if (unit === "DAYS") date.setDate(date.getDate() + Number(duration));
+    if (unit === "MONTHS") date.setMonth(date.getMonth() + Number(duration));
+    if (unit === "YEARS")
+      date.setFullYear(date.getFullYear() + Number(duration));
+
+    return date.toISOString().split("T")[0]; // yyyy-mm-dd
+  };
+
   // ADD STUDENT
   const handleAddStudent = async () => {
-    setErrors({}); // reset errors
+    setErrors({});
 
     try {
       const res = await Api.post("/student/create", {
@@ -85,6 +107,8 @@ const AddStudent = ({ isOpen, onClose }) => {
         courseId: courseid,
         dateOfJoining,
         ...(dateOfEnd && { dateOfEnd }),
+        customCourseFees,
+
         ...(enrolledFees && { enrolledFees }),
         ...(paymentMode && { paymentMode }),
       });
@@ -94,22 +118,18 @@ const AddStudent = ({ isOpen, onClose }) => {
     } catch (error) {
       const data = error?.response?.data;
 
-      // 1) Server ne direct message diya ho (jaise: "Mobile number already exists")
       if (data?.message && !Array.isArray(data?.errors)) {
         toast.error(data.message);
 
-        // Agar message mobile se related ho to field ke niche bhi dikha de:
         if (data.message.toLowerCase().includes("mobile")) {
           setErrors((prev) => ({
             ...prev,
             mobileNumber: data.message,
           }));
         }
-
         return;
       }
 
-      // 2) Validation errors array ka form me
       if (Array.isArray(data?.errors)) {
         const formatted = {};
         data.errors.forEach((err) => {
@@ -119,7 +139,6 @@ const AddStudent = ({ isOpen, onClose }) => {
         setErrors(formatted);
         toast.error("Validation failed!");
       } else {
-        // fallback
         toast.error("Something went wrong!");
       }
     }
@@ -203,20 +222,7 @@ const AddStudent = ({ isOpen, onClose }) => {
           <label className="text-md text-gray-700 font-semibold block mb-1 mt-4">
             Student&apos;s Gender
           </label>
-          <div className="flex flex-wrap gap-5 pl-1 mt-2">
-            {["male", "female", "other"].map((g) => (
-              <label key={g} className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  value={g}
-                  name="gender"
-                  checked={gender === g}
-                  onChange={(e) => setGender(e.target.value)}
-                />
-                <span>{g}</span>
-              </label>
-            ))}
-          </div>
+          <GenderDropdown gender={gender} setGender={setGender} />
           {errors.gender && (
             <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
           )}
@@ -269,24 +275,59 @@ const AddStudent = ({ isOpen, onClose }) => {
           <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
             Course
           </label>
-          <div className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md relative">
-            <select
-              value={courseid}
-              onChange={(e) => setCourseid(e.target.value)}
-              className="w-full bg-white text-gray-800 outline-none appearance-none cursor-pointer"
-            >
-              <option value="">Select Course</option>
-              {courses.map((course) => (
-                <option key={course.id} value={course.id}>
-                  {course.courseName}
-                </option>
-              ))}
-            </select>
-            <FaChevronDown className="absolute right-0 top-3 text-gray-600" />
-          </div>
+
+          <CustomDropdown
+            options={courses.map((c) => ({ value: c.id, label: c.courseName }))}
+            value={courseid}
+            onChange={(val) => {
+              setCourseid(val);
+
+              const selected = courses.find((c) => c.id === val);
+              setSelectedCourse(selected);
+
+              if (selected) {
+                // 1️⃣ Aaj ki date set karna
+                const today = new Date().toISOString().split("T")[0];
+                setDateOfJoining(today);
+
+                // 2️⃣ Course ke hisab se end date auto calculate
+                const end = calculateEndDate(
+                  today,
+                  selected.courseDuration,
+                  selected.courseDurationUnit
+                );
+                setDateOfEnd(end);
+
+                // 3️⃣ Default price set
+                setCustomCourseFees(selected.coursePrice?.toString() || "");
+              } else {
+                setCustomCourseFees("");
+                setDateOfJoining("");
+                setDateOfEnd("");
+              }
+            }}
+            placeholder="Select Course"
+          />
+
           {errors.courseId && (
             <p className="text-red-500 text-xs mt-1">{errors.courseId}</p>
           )}
+
+          {/* COURSE Price */}
+          <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
+            Course Price
+          </label>
+
+          <input
+            value={customCourseFees}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/[^0-9]/g, "");
+              setCustomCourseFees(raw);
+            }}
+            type="text"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+            placeholder="Enter course price"
+          />
 
           {/* DATE OF JOINING */}
           <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
@@ -294,13 +335,23 @@ const AddStudent = ({ isOpen, onClose }) => {
           </label>
           <input
             value={dateOfJoining}
-            onChange={(e) => setDateOfJoining(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setDateOfJoining(val);
+
+              if (selectedCourse) {
+                const end = calculateEndDate(
+                  val,
+                  selectedCourse.courseDuration,
+                  selectedCourse.courseDurationUnit
+                );
+                setDateOfEnd(end);
+              }
+            }}
             type="date"
+            max="31-12-9999"
             className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
           />
-          {errors.dateOfJoining && (
-            <p className="text-red-500 text-xs mt-1">{errors.dateOfJoining}</p>
-          )}
 
           {/* DATE OF END */}
           <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
@@ -310,7 +361,9 @@ const AddStudent = ({ isOpen, onClose }) => {
             value={dateOfEnd}
             onChange={(e) => setDateOfEnd(e.target.value)}
             type="date"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none"
+            max="31-12-9999"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-gray-50"
+            readOnly
           />
 
           {/* FEES */}
@@ -338,17 +391,10 @@ const AddStudent = ({ isOpen, onClose }) => {
               <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
                 Payment Mode
               </label>
-              <select
+              <PaymentModeDropdown
                 value={paymentMode}
-                onChange={(e) => setPaymentMode(e.target.value)}
-                className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
-              >
-                <option value="">Select Payment Method</option>
-                <option value="CASH">CASH</option>
-                <option value="UPI">UPI</option>
-                <option value="CARD">CARD</option>
-                <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-              </select>
+                onChange={setPaymentMode}
+              />
             </div>
           )}
 

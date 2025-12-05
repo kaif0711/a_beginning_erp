@@ -53,3 +53,33 @@
   box-shadow: 0 -16px 0 0 #ffffff;
   pointer-events: none;
 }
+
+
+/* Style the closed dropdown “box” (select element) */
+select.custom-gender {
+  width: 100%;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1; /* e.g. gray-300 in Tailwind */
+  border-radius: 0.5rem; /* rounded-lg */
+  appearance: none;     /* remove default arrow / styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+/* Add background and text color for options — may or may not work reliably */
+select.custom-gender option {
+  background-color: #ffffff;
+  color: #333333;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Try to style option hover/selected (won’t work in many browsers) */
+select.custom-gender option:hover,
+select.custom-gender option:focus {
+  background-color: #edf2f7; /* light gray */
+  color: #111827;
+}

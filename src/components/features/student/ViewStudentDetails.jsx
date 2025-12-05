@@ -68,8 +68,8 @@ const ViewStudentDetail = ({ isOpen3, onClose3, student }) => {
           <Detail
             label="Enrolled Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-green-800">
+                <FaRupeeSign />
                 {student.enrolledFees
                           ? Number(student.enrolledFees).toLocaleString("en-IN")
                           : "N/A"}

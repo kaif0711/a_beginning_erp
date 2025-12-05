@@ -14,10 +14,13 @@ import FeesPage from "./pages/student-page/FeesPage";
 import CertificatePage from "./pages/student-page/CertificatePage";
 import InternshipPage from "./pages/student-page/InternshipPage";
 import LeaveStudentsPage from "./pages/student-page/LeaveStudentsPage";
+import AdminPage from "./pages/student-page/AdminPage";
 
 import Login from "./pages/login-page/LoginPage";
 import ProtectedRoute from "./pages/login-page/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
+import DashboardPage from "./pages/student-page/DashboardPage";
+import SettingPage from "./pages/student-page/SettingPage";
 
 function LayoutWithSidebar({ children }) {
   return (
@@ -43,6 +46,16 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         {/* PROTECTED ADMIN PAGES */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <LayoutWithSidebar>
+                <DashboardPage />
+              </LayoutWithSidebar>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/students"
           element={
@@ -104,6 +117,27 @@ function App() {
             <ProtectedRoute>
               <LayoutWithSidebar>
                 <LeaveStudentsPage />
+              </LayoutWithSidebar>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <LayoutWithSidebar>
+                <AdminPage />
+              </LayoutWithSidebar>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/setting"
+          element={
+            <ProtectedRoute>
+              <LayoutWithSidebar>
+                <SettingPage />
               </LayoutWithSidebar>
             </ProtectedRoute>
           }

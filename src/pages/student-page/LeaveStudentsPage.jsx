@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaRupeeSign, FaSearch } from "react-icons/fa";
 import { GrView } from "react-icons/gr";
 import Api from "../../utils/apiClient";
 
-// Modals (adjust import paths if needed)
 import AddLeaveStudent from "../../components/features/leave/AddLeaveStudent";
 import ViewLeaveStudentDetail from "../../components/features/leave/ViewLeaveStudent";
-
 
 const LeaveStudentsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,31 +12,34 @@ const LeaveStudentsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Pagination states
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [pagination, setPagination] = useState({});
 
-  // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState(null);
 
-  // Fetch leave-student list with pagination
+  // Fetch leave-student list
   const fetchLeaves = async () => {
     setLoading(true);
     setError("");
+
     try {
-      const res = await Api.get(`/leave-student/list?page=${page}&limit=${limit}`);
+      const res = await Api.get(
+        `/leave-student/list?page=${page}&limit=${limit}`
+      );
+
       const leaves = res.data?.data?.leaveStudent || [];
       const pag = res.data?.data?.pagination || {};
 
-      if (pag.totalPage && page > pag.totalPage) {
-        setPage(pag.totalPage);
-      }
+      // FIX: normalize pagination
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
 
       setLeaveData(leaves);
-      setPagination(pag);
 
       if (leaves.length === 0) setError("No leave-student records found");
     } catch (err) {
@@ -49,21 +50,29 @@ const LeaveStudentsPage = () => {
     }
   };
 
-  // Search with pagination 
+  // Search
   const searchLeaves = async (query) => {
-    if (!query.trim()) {
-      fetchLeaves();
-      return;
-    }
+    if (!query.trim()) return fetchLeaves();
+
     setLoading(true);
     setError("");
+
     try {
       const res = await Api.get(
         `/leave-student/search?q=${query}&page=${page}&limit=${limit}`
       );
+
       const leaves = res.data?.data?.leaves || [];
+      const pag = res.data?.data?.pagination || {};
+
+      // FIX: normalize pagination
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
+
       setLeaveData(leaves);
-      setPagination(res.data?.data?.pagination || {});
+
       if (leaves.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
       console.error(err);
@@ -74,14 +83,10 @@ const LeaveStudentsPage = () => {
   };
 
   useEffect(() => {
-    if (searchQuery.trim()) {
-      searchLeaves(searchQuery);
-    } else {
-      fetchLeaves();
-    }
+    if (searchQuery.trim()) searchLeaves(searchQuery);
+    else fetchLeaves();
   }, [page, searchQuery]);
 
-  // Events
   const handleViewClick = (leave) => {
     setSelectedLeave(leave);
     setShowViewModal(true);
@@ -96,7 +101,7 @@ const LeaveStudentsPage = () => {
     else fetchLeaves();
   };
 
-  // Pagination buttons logic
+  // Pagination buttons
   const renderPageNumbers = () => {
     const total = pagination.totalPage;
     const current = pagination.pageNo;
@@ -104,6 +109,7 @@ const LeaveStudentsPage = () => {
     if (!total) return null;
 
     let pages = [];
+
     for (let i = 1; i <= total; i++) {
       if (i === 1 || i === total || Math.abs(i - current) <= 2) {
         pages.push(
@@ -117,10 +123,7 @@ const LeaveStudentsPage = () => {
             {i}
           </button>
         );
-      } else if (
-        (i === current - 3 && i > 1) ||
-        (i === current + 3 && i < total)
-      ) {
+      } else if (i === current - 3 || i === current + 3) {
         pages.push(
           <span key={`dots-${i}`} className="px-2">
             ...
@@ -128,6 +131,7 @@ const LeaveStudentsPage = () => {
         );
       }
     }
+
     return pages;
   };
 
@@ -161,65 +165,121 @@ const LeaveStudentsPage = () => {
         </button>
       </div>
 
-      {error && !loading && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
-          Loading...
-        </div>
-      )}
-
-      {/* Table */}
+      {/* TABLE */}
+      {/* TABLE */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
-        <div
-          className="overflow-x-auto"
-        >
+        <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Student Name</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Phone Number</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Course Name</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Total Fees</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Paid Fees</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Pending Fees</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Student Name
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Phone
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Email
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Course
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Total Fees
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Paid Fees
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Pending Fees
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
+                  Action
+                </th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {leaveData.length > 0
-                ? leaveData.map((leave) => (
-                    <tr key={leave.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">{leave.student?.name || "N/A"}</td>
-                      <td className="px-4 py-3">{leave.student?.mobileNumber || "N/A"}</td>
-                      <td className="px-4 py-3">{leave.student?.email || "N/A"}</td>
-                      <td className="px-4 py-3">{leave.course?.courseName || "N/A"}</td>
-                      <td className="px-4 py-3">{Number(leave.course?.coursePrice ?? 0).toLocaleString("en-IN")}</td>
-                      <td className="px-4 py-3">{Number(leave.totalPaidFees ?? 0).toLocaleString("en-IN")}</td>
-                      <td className="px-4 py-3">{Number((leave.pendingFees ?? 0)).toLocaleString("en-IN")}</td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => handleViewClick(leave)}
-                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                        >
-                          <GrView />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                : !loading && (
-                    <tr>
-                      <td colSpan="8" className="text-center py-6 text-gray-500">
-                        {error || "No leave-student records available"}
-                      </td>
-                    </tr>
-                  )}
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-blue-600 font-semibold"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-red-500 font-semibold"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
+
+              {!loading && !error && leaveData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-gray-500 font-medium"
+                  >
+                    No leave-student records available
+                  </td>
+                </tr>
+              )}
+
+              {!loading &&
+                !error &&
+                leaveData.length > 0 &&
+                leaveData.map((leave) => (
+                  <tr key={leave.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{leave.student?.name}</td>
+                    <td className="px-4 py-3">{leave.student?.mobileNumber}</td>
+                    <td className="px-4 py-3">{leave.student?.email}</td>
+                    <td className="px-4 py-3">{leave.course?.courseName}</td>
+
+                    <td className="px-4 py-3 text-blue-800">
+                      <div className="flex items-center gap-1">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(
+                          leave.student?.customCourseFees ??
+                            leave.course?.coursePrice ??
+                            0
+                        ).toLocaleString("en-IN")}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3 text-green-800">
+                      <div className="flex items-center gap-1">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(leave.totalPaidFees ?? 0).toLocaleString(
+                          "en-IN"
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3 text-red-800">
+                      <div className="flex items-center gap-1">
+                        <FaRupeeSign className="text-sm" />
+                        {Number(leave.pendingFees ?? 0).toLocaleString("en-IN")}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handleViewClick(leave)}
+                        className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                      >
+                        <GrView />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -227,7 +287,7 @@ const LeaveStudentsPage = () => {
 
       {/* Pagination */}
       {pagination.totalPage > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-6">
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -245,13 +305,40 @@ const LeaveStudentsPage = () => {
           >
             Next
           </button>
+
+          {/* 🔥 Smart Jump Dropdown */}
+          <select
+            value={page}
+            onChange={(e) => setPage(Number(e.target.value))}
+            className="border px-3 py-2 rounded bg-white cursor-pointer"
+          >
+            {(() => {
+              const total = pagination.totalPage;
+              const current = page;
+
+              const jumps = [];
+              for (let i = 1; i <= total; i += 5) jumps.push(i);
+
+              const nearby = [current - 1, current, current + 1];
+
+              const options = [...new Set([...jumps, ...nearby])]
+                .filter((p) => p >= 1 && p <= total)
+                .sort((a, b) => a - b);
+
+              return options.map((p) => (
+                <option key={p} value={p}>
+                  Go to Page {p}
+                </option>
+              ));
+            })()}
+          </select>
         </div>
       )}
 
-      {/* Modals */}
       {showAddModal && (
         <AddLeaveStudent isOpen={showAddModal} onClose={handleModalClose} />
       )}
+
       {showViewModal && (
         <ViewLeaveStudentDetail
           isOpen={showViewModal}

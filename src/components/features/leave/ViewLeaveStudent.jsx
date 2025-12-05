@@ -68,8 +68,8 @@ const ViewLeaveStudentDetail = ({ isOpen, onClose, leaveStudent  }) => {
           <Detail
             label="Total Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-blue-700">
+                <FaRupeeSign />
                 {leaveStudent.totalFees != null
                   ? Number(leaveStudent.totalFees).toLocaleString("en-IN")
                   : leaveStudent.course?.coursePrice != null
@@ -81,8 +81,8 @@ const ViewLeaveStudentDetail = ({ isOpen, onClose, leaveStudent  }) => {
           <Detail
             label="Paid Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-green-700">
+                <FaRupeeSign />
                 {leaveStudent.totalPaidFees != null
                   ? Number(leaveStudent.totalPaidFees).toLocaleString("en-IN")
                   : "N/A"}
@@ -92,8 +92,8 @@ const ViewLeaveStudentDetail = ({ isOpen, onClose, leaveStudent  }) => {
           <Detail
             label="Pending Fees"
             value={
-              <span className="flex items-center gap-1">
-                <FaRupeeSign className="text-gray-700" />
+              <span className="flex items-center gap-1 text-red-700">
+                <FaRupeeSign />
                 {leaveStudent.pendingFees != null
                   ? Number(leaveStudent.pendingFees).toLocaleString("en-IN")
                   : (leaveStudent.course?.coursePrice != null && leaveStudent.paidFees != null)

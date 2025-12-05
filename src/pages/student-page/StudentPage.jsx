@@ -10,6 +10,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrView } from "react-icons/gr";
 import { TbSend2 } from "react-icons/tb";
 import { toast } from "react-toastify";
+import StudentExportDropdown from "../../components/dropdown/StudentExportPDF";
 
 const StudentPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,14 +24,12 @@ const StudentPage = () => {
   const [pagination, setPagination] = useState({});
 
   // Modals
-  const [showModal, setShowModal] = useState(false);  //add
+  const [showModal, setShowModal] = useState(false); //add
   const [showModal1, setShowModal1] = useState(false); //edit
   const [showModal2, setShowModal2] = useState(false); //delete
   const [showModal3, setShowModal3] = useState(false); //view
-  const [selectedStudentId, setSelectedStudentId] = useState(null); 
-  const [viewStudent, setViewStudent] = useState(null); 
-
-
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [viewStudent, setViewStudent] = useState(null);
 
   // Format DOB
   const toDDMMYYYY = (dateString) => {
@@ -44,9 +43,18 @@ const StudentPage = () => {
     setError("");
     try {
       const data = await Api.get(`/student/list?page=${page}&limit=${limit}`);
+
       const students = data.data?.data?.students || [];
+      const pag = data.data?.data?.pagination || {};
+
       setStudentsdata(students);
-      setPagination(data.data?.data?.pagination || {});
+
+      // 🔥 FIXED PAGINATION
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
+
       if (students.length === 0) setError("No students found");
     } catch (err) {
       console.error(err);
@@ -69,8 +77,16 @@ const StudentPage = () => {
         `/student/search?q=${query}&page=${page}&limit=${limit}`
       );
       const students = data.data?.data?.students || [];
+      const pag = data.data?.data?.pagination || {};
+
       setStudentsdata(students);
-      setPagination(data.data?.data?.pagination || {});
+
+      // 🔥 Same FIX here also
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
+
       if (students.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
       console.error(err);
@@ -180,6 +196,9 @@ const StudentPage = () => {
           />
         </div>
 
+        {/* EXPORT DROPDOWN – NEW */}
+        <StudentExportDropdown />
+
         <button
           onClick={() => setShowModal(true)}
           className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
@@ -188,23 +207,9 @@ const StudentPage = () => {
         </button>
       </div>
 
-      {error && !loading && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
-          Loading...
-        </div>
-      )}
-
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
-        <div
-          className="overflow-x-auto"
-        >
+        <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">
               <tr>
@@ -227,7 +232,7 @@ const StudentPage = () => {
                   Course
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Fees
+                  Fees Paid
                 </th>
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                   Actions
@@ -236,74 +241,104 @@ const StudentPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {studentsdata.length > 0
-                ? studentsdata.map((student) => (
-                    <tr key={student.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">{student.name}</td>
-                      <td className="px-4 py-3">{student.fatherName}</td>
-                      <td className="px-4 py-3">{student.gender}</td>
-                      <td className="px-4 py-3">{student.mobileNumber}</td>
-                      <td className="px-4 py-3">{toDDMMYYYY(student.DOB)}</td>
-                      <td className="px-4 py-3">
-                        {student.course?.courseName || "N/A"}
-                      </td>
-                      <td className="px-4 py-3 flex items-center">
-                        <FaRupeeSign className="text-sm" />{" "}
-                        {student.enrolledFees
-                          ? Number(student.enrolledFees).toLocaleString("en-IN")
-                          : "N/A"}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleViewClick(student)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <GrView />
-                          </button>
+              {/* SHOW LOADING */}
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-blue-600 font-semibold"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleEditClick(student.id)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <TiEdit />
-                          </button>
+              {/* SHOW ERROR */}
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-red-500 font-semibold"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleDeleteClick(student.id)}
-                            className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <RiDeleteBin6Line />
-                          </button>
+              {/* NO DATA */}
+              {!loading && !error && studentsdata.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-gray-500 font-medium"
+                  >
+                    No students found.
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleSendStudentForm(student.id)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <TbSend2 />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                : !loading && (
-                    <tr>
-                      <td
-                        colSpan="10"
-                        className="text-center py-6 text-gray-500"
-                      >
-                        {error || "No students available"}
-                      </td>
-                    </tr>
-                  )}
+              {/* DATA ROWS */}
+              {!loading &&
+                !error &&
+                studentsdata.length > 0 &&
+                studentsdata.map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{student.name}</td>
+                    <td className="px-4 py-3">{student.fatherName}</td>
+                    <td className="px-4 py-3">{student.gender}</td>
+                    <td className="px-4 py-3">{student.mobileNumber}</td>
+                    <td className="px-4 py-3">{toDDMMYYYY(student.DOB)}</td>
+                    <td className="px-4 py-3">
+                      {student.course?.courseName || "N/A"}
+                    </td>
+                    <td className="px-4 py-3 flex items-center text-green-800">
+                      <FaRupeeSign />
+                      {student.enrolledFees
+                        ? Number(student.enrolledFees).toLocaleString("en-IN")
+                        : "N/A"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewClick(student)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <GrView />
+                        </button>
+
+                        <button
+                          onClick={() => handleEditClick(student.id)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <TiEdit />
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteClick(student.id)}
+                          className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <RiDeleteBin6Line />
+                        </button>
+
+                        <button
+                          onClick={() => handleSendStudentForm(student.id)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <TbSend2 />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* NUMBERED PAGINATION */}
+      {/* PAGINATION */}
       {pagination.totalPage > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-6">
+          {/* Prev Button */}
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -312,8 +347,10 @@ const StudentPage = () => {
             Prev
           </button>
 
+          {/* Number Buttons */}
           {renderPageNumbers()}
 
+          {/* Next Button */}
           <button
             disabled={page >= pagination.totalPage}
             onClick={() => setPage(page + 1)}
@@ -321,6 +358,21 @@ const StudentPage = () => {
           >
             Next
           </button>
+
+          {/* Jump Dropdown */}
+          <select
+            value={page}
+            onChange={(e) => setPage(Number(e.target.value))}
+            className="border px-3 py-2 rounded bg-white cursor-pointer"
+          >
+            {Array.from({ length: pagination.totalPage }, (_, i) => i + 1).map(
+              (p) => (
+                <option key={p} value={p}>
+                  Go to Page {p}
+                </option>
+              )
+            )}
+          </select>
         </div>
       )}
 

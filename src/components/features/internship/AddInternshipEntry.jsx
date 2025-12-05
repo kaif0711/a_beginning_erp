@@ -23,10 +23,13 @@ const AddInternshipEntry = ({ isOpen, onClose }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const [courses, setCourses] = useState([]); // ⭐ NEW
   const [errors, setErrors] = useState({});
 
+  // FETCH STUDENTS
   useEffect(() => {
     fetchStudents();
+    fetchCourses(); // ⭐ NEW
   }, []);
 
   const fetchStudents = async () => {
@@ -37,6 +40,17 @@ const AddInternshipEntry = ({ isOpen, onClose }) => {
       setFiltered(list);
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  // ⭐ Fetch full course list (for duration + unit)
+  const fetchCourses = async () => {
+    try {
+      const res = await Api.get("/course/list");
+      const list = res?.data?.data?.courses || [];
+      setCourses(list);
+    } catch (err) {
+      console.log("Course load error");
     }
   };
 
@@ -58,6 +72,21 @@ const AddInternshipEntry = ({ isOpen, onClose }) => {
     setFiltered(f);
   };
 
+  // ⭐ calculateEndDate (same as AddStudent)
+  const calculateEndDate = (start, duration, unit) => {
+    if (!start || !duration || !unit) return "";
+
+    const date = new Date(start);
+
+    if (unit === "DAYS") date.setDate(date.getDate() + Number(duration));
+    if (unit === "MONTHS") date.setMonth(date.getMonth() + Number(duration));
+    if (unit === "YEARS")
+      date.setFullYear(date.getFullYear() + Number(duration));
+
+    return date.toISOString().split("T")[0];
+  };
+
+  // ⭐ Full working selectStudent()
   const selectStudent = async (stu) => {
     setQuery(stu.name);
     setStudentId(stu.id);
@@ -73,10 +102,24 @@ const AddInternshipEntry = ({ isOpen, onClose }) => {
       setPhone(data?.mobileNumber || "");
       setEmail(data?.email || "");
 
-      // NO auto-fill for start/end date
-      setStartDate("");
-      setEndDate("");
+      // ⭐ Get full course details from course list
+      const selectedCourse = courses.find((c) => c.id === stu.courseId);
 
+      // ⭐ Auto Start Date = today
+      const today = new Date().toISOString().split("T")[0];
+      setStartDate(today);
+
+      // ⭐ Auto End Date using selectedCourse duration
+      if (selectedCourse) {
+        const end = calculateEndDate(
+          today,
+          selectedCourse.courseDuration,
+          selectedCourse.courseDurationUnit
+        );
+        setEndDate(end);
+      } else {
+        setEndDate("");
+      }
     } catch (e) {
       console.log(e);
     }
@@ -149,7 +192,6 @@ const AddInternshipEntry = ({ isOpen, onClose }) => {
       </div>
 
       <div className="mx-2 sm:mx-4 overflow-y-auto max-h-[70vh] pb-6 mt-5 pr-2">
-
         {/* STUDENT SEARCH */}
         <label className="text-md text-gray-700 font-semibold block mb-1">
           Student Name

@@ -4,6 +4,8 @@ import { RxCross2 } from "react-icons/rx";
 import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
 import { toast } from "react-toastify";
+import GenderDropdown from "../../dropdown/Gender";
+import PaymentModeDropdown from "../../dropdown/PaymentModeDropdown";
 
 Modal.setAppElement("#root");
 
@@ -44,7 +46,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
     try {
       const res = await Api.get(`/student/details?id=${studentId}`);
       const s = res.data.data;
-      console.log(s);
+      // console.log(s);
 
       if (s) {
         setStudentName(s.name || "");
@@ -161,35 +163,35 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
       <div className="mx-2 sm:mx-4 overflow-y-auto max-h-[70vh] pb-6 mt-5 pr-2">
         <div className="rounded-xl">
           {/* NAME */}
-          <label className="text-xs text-gray-500 block mb-1">
+          <label className="text-md text-gray-700 font-semibold block">
             Student&apos;s Name
           </label>
           <input
             value={studentName}
             onChange={(e) => setStudentName(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md"
           />
           {errors.name && (
-            <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            <p className="text-red-500 text-md mt-1">{errors.name}</p>
           )}
 
           {/* FATHER NAME */}
-          <label className="text-xs text-gray-500 block mb-1 mt-4">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Father&apos;s Name
           </label>
           <input
             value={studentFatherName}
             onChange={(e) => setStudentFatherName(e.target.value)}
             type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2 outline-none"
+            className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md"
           />
           {errors.fatherName && (
-            <p className="text-red-500 text-xs mt-1">{errors.fatherName}</p>
+            <p className="text-red-500 text-md mt-1">{errors.fatherName}</p>
           )}
 
           {/* EMAIL */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Email (not editable)
           </label>
           <input
@@ -200,7 +202,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
           />
 
           {/* MOBILE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Mobile Number (not editable)
           </label>
           <input
@@ -211,7 +213,7 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
           />
 
           {/* FATHER MOBILE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Father Mobile No.
           </label>
           <input
@@ -221,11 +223,11 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
             className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
           {errors.fatherNumber && (
-            <p className="text-red-500 text-xs mt-1">{errors.fatherNumber}</p>
+            <p className="text-red-500 text-md mt-1">{errors.fatherNumber}</p>
           )}
 
           {/* DOB */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">DOB</label>
+          <label className="text-md text-gray-700 font-semibold block mt-4">DOB</label>
           <input
             value={DOB}
             onChange={(e) => setDOB(e.target.value)}
@@ -233,37 +235,25 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
             className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
           {errors.DOB && (
-            <p className="text-red-500 text-xs mt-1">{errors.DOB}</p>
+            <p className="text-red-500 text-md mt-1">{errors.DOB}</p>
           )}
 
           {/* GENDER */}
           <label className="text-xs text-gray-500 block mb-1 mt-4">
             Gender
           </label>
-          <div className="flex gap-5 pl-1 mt-2">
-            {["male", "female", "other"].map((g) => (
-              <label key={g} className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  value={g}
-                  name="gender"
-                  checked={gender === g}
-                  onChange={() => setGender(g)}
-                />
-                <span>{g}</span>
-              </label>
-            ))}
-          </div>
+          <GenderDropdown gender={gender} setGender={setGender} />
           {errors.gender && (
-            <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+            <p className="text-red-500 text-md mt-1">{errors.gender}</p>
           )}
 
           {/* COURSE */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Course
           </label>
-          <div className="relative w-full border border-gray-400 rounded-lg px-3 py-2">
+          <div className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-600 ">
             <select
+              disabled
               value={courseid}
               onChange={(e) => setCourseid(e.target.value)}
               className="w-full outline-none"
@@ -278,74 +268,39 @@ const EditStudent = ({ isOpen1, onClose1, studentId }) => {
             {/* <FaChevronDown className="absolute right-0 top-3 text-gray-500" /> */}
           </div>
           {errors.courseId && (
-            <p className="text-red-500 text-xs mt-1">{errors.courseId}</p>
+            <p className="text-red-500 text-md mt-1">{errors.courseId}</p>
           )}
 
           {/* DATE OF JOINING */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Date of Joining
           </label>
           <input
             value={dateOfJoining}
             onChange={(e) => setDateOfJoining(e.target.value)}
             type="date"
+            disabled
             className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
           {errors.dateOfJoining && (
-            <p className="text-red-500 text-xs mt-1">{errors.dateOfJoining}</p>
+            <p className="text-red-500 text-md mt-1">{errors.dateOfJoining}</p>
           )}
 
           {/* DATE OF END */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
+          <label className="text-md text-gray-700 font-semibold block mt-4">
             Date of End
           </label>
           <input
             value={dateOfEnd}
             onChange={(e) => setDateOfEnd(e.target.value)}
             type="date"
+            disabled
             className="w-full border border-gray-400 rounded-lg px-3 py-2"
           />
           {errors.dateOfEnd && (
-            <p className="text-red-500 text-xs mt-1">{errors.dateOfEnd}</p>
+            <p className="text-red-500 text-md mt-1">{errors.dateOfEnd}</p>
           )}
-
-          {/* FEES */}
-          <label className="text-xs text-gray-500 block mt-4 mb-1">
-            Enrolled Fees
-          </label>
-          <input
-            value={enrolledFees}
-            onChange={(e) => {
-              const raw = e.target.value.replace(/[^0-9]/g, "");
-              setEnrolledFees(raw);
-            }}
-            type="text"
-            className="w-full border border-gray-400 rounded-lg px-3 py-2"
-          />
-          {errors.enrolledFees && (
-            <p className="text-red-500 text-xs mt-1">{errors.enrolledFees}</p>
-          )}
-
-          {/* PAYMENT MODE DROPDOWN */}
-          {enrolledFees && (
-            <div>
-              <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
-                Payment Mode
-              </label>
-              <select
-                value={paymentMode}
-                onChange={(e) => setPaymentMode(e.target.value)}
-                className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
-              >
-                <option value="">Select Payment Method</option>
-                <option value="CASH">CASH</option>
-                <option value="UPI">UPI</option>
-                <option value="CARD">CARD</option>
-                <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-              </select>
-            </div>
-          )}
-
+          
           {/* BUTTONS */}
           <div className="flex gap-4 justify-end mt-5">
             <button

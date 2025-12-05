@@ -10,6 +10,7 @@ import { TiEdit } from "react-icons/ti";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { GrView } from "react-icons/gr";
 import { LiaRupeeSignSolid } from "react-icons/lia";
+import CourseExportDropdown from "../../components/dropdown/CourseExportPDF";
 
 const CoursesPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,7 +39,12 @@ const CoursesPage = () => {
       const data = await Api.get(`/course/list?page=${page}&limit=${limit}`);
       const courses = data.data?.data?.courses || [];
       setCoursesdata(courses);
-      setPagination(data.data?.data?.pagination || {});
+      const pag = data.data?.data?.pagination || {};
+
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
       if (courses.length === 0) setError("No courses found");
     } catch (err) {
       console.error(err);
@@ -60,10 +66,15 @@ const CoursesPage = () => {
       const data = await Api.get(
         `/course/search?q=${query}&page=${page}&limit=${limit}`
       );
-      const courses = data.data?.data?.course || [];
+      const courses = data.data?.data.courses || [];
 
       setCoursesdata(courses);
-      setPagination(data.data?.data?.pagination || {});
+      const pag = data.data?.data?.pagination || {};
+
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
       if (courses.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
       console.error(err);
@@ -159,6 +170,8 @@ const CoursesPage = () => {
           />
         </div>
 
+        <CourseExportDropdown />
+
         <button
           onClick={() => setShowModal(true)}
           className="bg-primary text-white font-semibold rounded-lg px-6 py-3 shadow-md cursor-pointer"
@@ -167,23 +180,9 @@ const CoursesPage = () => {
         </button>
       </div>
 
-      {error && !loading && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
-          Loading...
-        </div>
-      )}
-
       {/* Table */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
-        <div
-          className="overflow-x-auto"
-        >
+        <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-primary text-white sticky top-0 z-10">
               <tr>
@@ -206,61 +205,91 @@ const CoursesPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {coursesdata.length > 0
-                ? coursesdata.map((course) => (
-                    <tr key={course.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">{course.courseName}</td>
-                      <td className="px-4 py-3 flex items-center">
-                        <FaRupeeSign className="text-sm" />
-                        {(Number(course.coursePrice) ?? 0).toLocaleString(
-                          "en-IN"
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {course.courseDuration +
-                          " " +
-                          course.courseDurationUnit}
-                      </td>
-                      <td className="px-4 py-3 capitalize">
-                        {course.courseDescription}
-                      </td>
+              {/* LOADING */}
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-blue-600 font-semibold"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              )}
 
-                      <td className="px-4 py-3">
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => handleViewClick(course)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <GrView />
-                          </button>
+              {/* ERROR */}
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-red-500 font-semibold"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleEditClick(course.id)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <TiEdit />
-                          </button>
+              {/* NO DATA */}
+              {!loading && !error && coursesdata.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-center py-10 text-gray-500 font-medium"
+                  >
+                    No courses available
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleDeleteClick(course.id)}
-                            className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <RiDeleteBin6Line />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                : !loading && (
-                    <tr>
-                      <td
-                        colSpan="10"
-                        className="text-center py-6 text-gray-500"
-                      >
-                        {error || "No courses available"}
-                      </td>
-                    </tr>
-                  )}
+              {/* TABLE ROWS */}
+              {!loading &&
+                !error &&
+                coursesdata.length > 0 &&
+                coursesdata.map((course) => (
+                  <tr key={course.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">{course.courseName}</td>
+
+                    <td className="px-4 py-3 flex items-center">
+                      <FaRupeeSign className="text-sm" />
+                      {(Number(course.coursePrice) ?? 0).toLocaleString(
+                        "en-IN"
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      {course.courseDuration} {course.courseDurationUnit}
+                    </td>
+
+                    <td className="px-4 py-3 capitalize">
+                      {course.courseDescription}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleViewClick(course)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <GrView />
+                        </button>
+
+                        <button
+                          onClick={() => handleEditClick(course.id)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <TiEdit />
+                        </button>
+
+                        <button
+                          onClick={() => handleDeleteClick(course.id)}
+                          className="bg-red-500 text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <RiDeleteBin6Line />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -268,7 +297,8 @@ const CoursesPage = () => {
 
       {/* Pagination */}
       {pagination.totalPage > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-6">
+          {/* Prev */}
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -277,8 +307,10 @@ const CoursesPage = () => {
             Prev
           </button>
 
+          {/* Number Buttons */}
           {renderPageNumbers()}
 
+          {/* Next */}
           <button
             disabled={page >= pagination.totalPage}
             onClick={() => setPage(page + 1)}
@@ -286,6 +318,38 @@ const CoursesPage = () => {
           >
             Next
           </button>
+
+          {/* 🔥 Smart Jump Dropdown (1,5,10,15 + Nearby Pages) */}
+          <select
+            value={page}
+            onChange={(e) => setPage(Number(e.target.value))}
+            className="border px-3 py-2 rounded bg-white cursor-pointer"
+          >
+            {(() => {
+              const total = pagination.totalPage;
+              const current = page;
+
+              // base jumps: 1,5,10,15,20,25,...
+              const jumps = [];
+              for (let i = 1; i <= total; i += 5) {
+                jumps.push(i);
+              }
+
+              // nearby pages: current-1, current, current+1
+              const nearby = [current - 1, current, current + 1];
+
+              // merge, remove duplicates, filter valid, sort
+              const options = [...new Set([...jumps, ...nearby])]
+                .filter((p) => p >= 1 && p <= total)
+                .sort((a, b) => a - b);
+
+              return options.map((p) => (
+                <option key={p} value={p}>
+                  Go to Page {p}
+                </option>
+              ));
+            })()}
+          </select>
         </div>
       )}
 

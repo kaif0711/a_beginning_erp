@@ -6,6 +6,7 @@ import { TbSend2 } from "react-icons/tb";
 import { toast } from "react-toastify";
 import AddInternshipEntry from "../../components/features/internship/AddInternshipEntry";
 import ViewInternshipDetail from "../../components/features/internship/ViewInternshipDetail";
+import InternshipPreviewModal from "../../components/features/internship/InternshipPreviewModal";
 
 const InternshipPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,10 +18,11 @@ const InternshipPage = () => {
   const [limit] = useState(10);
   const [pagination, setPagination] = useState({});
 
-  // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
 
   const toDDMMYYYY = (dateString) => {
     if (!dateString) return "N/A";
@@ -36,10 +38,17 @@ const InternshipPage = () => {
       const res = await Api.get(
         `/intershipletter/list?page=${page}&limit=${limit}`
       );
+
       const interns = res.data?.data?.result || [];
       const pag = res.data?.data?.pagination || {};
+
+      // FIX: normalize pagination
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
+
       setInternData(interns);
-      setPagination(pag);
 
       if (interns.length === 0) setError("No internship records found");
     } catch (err) {
@@ -60,8 +69,15 @@ const InternshipPage = () => {
       );
 
       const interns = res.data?.data?.result || [];
+      const pag = res.data?.data?.pagination || {};
+
+      // FIX: normalize pagination
+      setPagination({
+        totalPage: pag.totalPage || Math.ceil((pag.total || 0) / limit),
+        pageNo: pag.pageNo || pag.page || page,
+      });
+
       setInternData(interns);
-      setPagination(res.data?.data?.pagination || {});
 
       if (interns.length === 0) setError(`No results for "${query}"`);
     } catch (err) {
@@ -76,13 +92,11 @@ const InternshipPage = () => {
     else fetchInternships();
   }, [page, searchQuery]);
 
-  // View modal
   const handleViewClick = (student) => {
     setSelectedStudent(student);
     setShowViewModal(true);
   };
 
-  // Send Internship Letter
   const handleSendInternship = async (internshipId) => {
     try {
       await Api.post(
@@ -101,6 +115,7 @@ const InternshipPage = () => {
   const handleModalClose = () => {
     setShowAddModal(false);
     setShowViewModal(false);
+    setShowPreviewModal(false);
     setSelectedStudent(null);
 
     if (searchQuery.trim()) searchInternships(searchQuery);
@@ -113,6 +128,7 @@ const InternshipPage = () => {
     if (!total) return null;
 
     let pages = [];
+
     for (let i = 1; i <= total; i++) {
       if (i === 1 || i === total || Math.abs(i - current) <= 2) {
         pages.push(
@@ -134,16 +150,17 @@ const InternshipPage = () => {
         );
       }
     }
+
     return pages;
   };
 
   return (
     <div className="max-w-7xl mx-auto my-10 px-4 sm:px-8 md:px-16 lg:px-20 overflow-hidden">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Internship Latter
+        Internship Letter
       </h1>
 
-      {/* Search + Add button */}
+      {/* Search + Add */}
       <div className="flex items-center gap-4 mb-6">
         <div className="flex-1 relative">
           <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -169,18 +186,6 @@ const InternshipPage = () => {
         </button>
       </div>
 
-      {/* Alerts */}
-      {error && !loading && (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-      {loading && (
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg mb-4">
-          Loading...
-        </div>
-      )}
-
       {/* TABLE */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-2">
         <div className="overflow-x-auto">
@@ -190,12 +195,6 @@ const InternshipPage = () => {
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                   Student Name
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Phone Number
-                </th>
-                {/* <th className="px-4 py-3 text-left text-xs font-medium uppercase">
-                  Email
-                </th> */}
                 <th className="px-4 py-3 text-left text-xs font-medium uppercase">
                   Course Name
                 </th>
@@ -216,58 +215,96 @@ const InternshipPage = () => {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {internData.length > 0
-                ? internData.map((student) => (
-                    <tr key={student.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        {student.student?.name || "N/A"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {student.student?.mobileNumber || "N/A"}
-                      </td>
-                      {/* <td className="px-4 py-3">
-                        {student.student?.email || "N/A"}
-                      </td> */}
-                      <td className="px-4 py-3">
-                        {student.course?.courseName || "N/A"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {toDDMMYYYY(student.startDate)}
-                      </td>
-                      <td className="px-4 py-3">
-                        {toDDMMYYYY(student.endDate)}
-                      </td>
+              {loading && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-blue-600 font-semibold"
+                  >
+                    Loading...
+                  </td>
+                </tr>
+              )}
 
-                      <td className="px-4 py-3">
-                        {toDDMMYYYY(student.createdAt)}
-                      </td>
+              {!loading && error && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-red-500 font-semibold"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              )}
 
-                      <td className="px-4 py-3">
-                        <div className="flex gap-4">
-                          <button
-                            onClick={() => handleViewClick(student)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <GrView />
-                          </button>
+              {!loading && !error && internData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="20"
+                    className="text-center py-10 text-gray-500 font-medium"
+                  >
+                    No internship students available
+                  </td>
+                </tr>
+              )}
 
-                          <button
-                            onClick={() => handleSendInternship(student.id)}
-                            className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
-                          >
-                            <TbSend2 />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                : !loading && (
-                    <tr>
-                      <td colSpan="8" className="text-center py-6 text-gray-500">
-                        {error || "No internship students available"}
-                      </td>
-                    </tr>
-                  )}
+              {!loading &&
+                !error &&
+                internData.length > 0 &&
+                internData.map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      {student.student?.name || "N/A"}
+                    </td>
+                    <td className="px-4 py-3">
+                      {student.course?.courseName || "N/A"}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      {toDDMMYYYY(student.startDate)}
+                    </td>
+
+                    <td className="px-4 py-3">{toDDMMYYYY(student.endDate)}</td>
+
+                    <td className="px-4 py-3">
+                      {toDDMMYYYY(student.createdAt)}
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex gap-4">
+                        <button
+                          onClick={() => handleViewClick(student)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <GrView />
+                        </button>
+
+                        <button
+                          onClick={() => handleSendInternship(student.id)}
+                          className="bg-primary text-white rounded px-3 py-1 cursor-pointer"
+                        >
+                          <TbSend2 />
+                        </button>
+                        {/* NEW PREVIEW BUTTON */}
+                        <button
+                          onClick={() => {
+                            if (!student.intershipLetterUrl) return;
+                            setSelectedStudent(student);
+                            setShowPreviewModal(true);
+                          }}
+                          disabled={!student.intershipLetterUrl}
+                          className={`rounded px-3 py-1 text-xs underline ${
+                            student.intershipLetterUrl
+                              ? "bg-primary text-white cursor-pointer"
+                              : "bg-gray-400 cursor-not-allowed"
+                          }`}
+                        >
+                          View
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
@@ -275,7 +312,7 @@ const InternshipPage = () => {
 
       {/* Pagination */}
       {pagination.totalPage > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-6">
           <button
             disabled={page <= 1}
             onClick={() => setPage(page - 1)}
@@ -293,18 +330,53 @@ const InternshipPage = () => {
           >
             Next
           </button>
+
+          {/* Smart Jump Dropdown */}
+          <select
+            value={page}
+            onChange={(e) => setPage(Number(e.target.value))}
+            className="border px-3 py-2 rounded bg-white cursor-pointer"
+          >
+            {(() => {
+              const total = pagination.totalPage;
+              const current = page;
+
+              const jumps = [];
+              for (let i = 1; i <= total; i += 5) {
+                jumps.push(i);
+              }
+
+              const nearby = [current - 1, current, current + 1];
+
+              const options = [...new Set([...jumps, ...nearby])]
+                .filter((p) => p >= 1 && p <= total)
+                .sort((a, b) => a - b);
+
+              return options.map((p) => (
+                <option key={p} value={p}>
+                  Go to Page {p}
+                </option>
+              ));
+            })()}
+          </select>
         </div>
       )}
 
-      {/* Add Internship Modal */}
       {showAddModal && (
         <AddInternshipEntry isOpen={showAddModal} onClose={handleModalClose} />
       )}
 
-      {/* View Internship Detail */}
       {showViewModal && (
         <ViewInternshipDetail
           isOpen={showViewModal}
+          onClose={handleModalClose}
+          internship={selectedStudent}
+        />
+      )}
+
+      {showPreviewModal && (
+        <InternshipPreviewModal
+          isOpen={showPreviewModal}
           onClose={handleModalClose}
           internship={selectedStudent}
         />

@@ -5,6 +5,7 @@ import { RxCross2 } from "react-icons/rx";
 import Modal from "react-modal";
 import Api from "../../../utils/apiClient";
 import { toast } from "react-toastify";
+import PaymentModeDropdown from "../../dropdown/PaymentModeDropdown";
 
 Modal.setAppElement("#root");
 
@@ -72,10 +73,10 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
       const data = res.data?.data;
 
       setCourseId(data.courseId);
+      setTotalFees(data.customCourseFees);
 
       if (data?.course) {
         setCourseName(data.course.courseName);
-        setTotalFees(data.course.coursePrice);
       }
 
       setAlreadyPaid(data.totalPaid || 0);
@@ -282,17 +283,7 @@ const AddFeesEntry = ({ isOpen, onClose }) => {
         <label className="text-md text-gray-700 font-semibold block mt-4 mb-1">
           Payment Mode
         </label>
-        <select
-          value={paymentMode}
-          onChange={(e) => setPaymentMode(e.target.value)}
-          className="w-full border border-gray-400 rounded-lg px-3 py-2 text-md outline-none bg-white cursor-pointer"
-        >
-          <option>Select payment mode</option>
-          <option value="CASH">CASH</option>
-          <option value="UPI">UPI</option>
-          <option value="CARD">CARD</option>
-          <option value="BANK_TRANSFER">BANK_TRANSFER</option>
-        </select>
+        <PaymentModeDropdown value={paymentMode} onChange={setPaymentMode} />
         {errors.paymentMode && (
           <p className="text-red-500 text-xs mt-1">{errors.paymentMode}</p>
         )}
