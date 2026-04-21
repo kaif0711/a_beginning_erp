@@ -1,0 +1,24 @@
+{
+  "certificates": [
+    {
+      "id": "cert1",
+      "student": { "name": "Arjun Sharma", "mobileNumber": "9876543210", "email": "arjun@example.com" },
+      "course": { "courseName": "Full Stack Web Development" },
+      "generatedAt": "2026-04-01T10:00:00Z",
+      "certificateUrl": "mock_cert_url"
+    },
+    {
+      "id": "cert2",
+      "student": { "name": "Priya Patel", "mobileNumber": "9876543211", "email": "priya@example.com" },
+      "course": { "courseName": "Data Science with Python" },
+      "generatedAt": "2026-04-05T12:00:00Z",
+      "certificateUrl": "mock_cert_url"
+    }
+  ],
+  "pagination": {
+    "total": 2,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "result": [
+    {
+      "id": "i1",
+      "student": { "name": "Arjun Sharma" },
+      "course": { "courseName": "Full Stack Web Development" },
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-06-30T00:00:00Z",
+      "createdAt": "2026-01-05T10:00:00Z",
+      "intershipLetterUrl": "mock_url"
+    },
+    {
+      "id": "i2",
+      "student": { "name": "Priya Patel" },
+      "course": { "courseName": "Data Science with Python" },
+      "startDate": "2026-02-01T00:00:00Z",
+      "endDate": "2026-05-31T00:00:00Z",
+      "createdAt": "2026-02-05T11:00:00Z",
+      "intershipLetterUrl": "mock_url"
+    }
+  ],
+  "pagination": {
+    "total": 2,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}

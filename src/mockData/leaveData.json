@@ -1,0 +1,24 @@
+{
+  "leaveStudent": [
+    {
+      "id": "l1",
+      "student": { "name": "Rohan Gupta", "mobileNumber": "9876543212", "email": "rohan@example.com", "customCourseFees": 35000 },
+      "course": { "courseName": "UI/UX Design Masterclass", "coursePrice": 35000 },
+      "totalPaidFees": 35000,
+      "pendingFees": 0
+    },
+    {
+      "id": "l2",
+      "student": { "name": "Karan Malhotra", "mobileNumber": "9876543214", "email": "karan@example.com", "customCourseFees": 40000 },
+      "course": { "courseName": "Cyber Security Fundamentals", "coursePrice": 40000 },
+      "totalPaidFees": 40000,
+      "pendingFees": 0
+    }
+  ],
+  "pagination": {
+    "total": 2,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}

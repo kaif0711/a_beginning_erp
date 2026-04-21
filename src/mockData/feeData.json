@@ -1,0 +1,34 @@
+{
+  "fees": [
+    {
+      "id": "f1",
+      "student": { "name": "Arjun Sharma", "customCourseFees": 45000 },
+      "course": { "courseName": "Full Stack Web Development" },
+      "amount": 25000,
+      "pending": 20000,
+      "date": "2026-04-10T10:00:00Z"
+    },
+    {
+      "id": "f2",
+      "student": { "name": "Priya Patel", "customCourseFees": 55000 },
+      "course": { "courseName": "Data Science with Python" },
+      "amount": 30000,
+      "pending": 25000,
+      "date": "2026-04-12T14:30:00Z"
+    },
+    {
+      "id": "f3",
+      "student": { "name": "Rohan Gupta", "customCourseFees": 35000 },
+      "course": { "courseName": "UI/UX Design Masterclass" },
+      "amount": 35000,
+      "pending": 0,
+      "date": "2026-04-15T09:15:00Z"
+    }
+  ],
+  "pagination": {
+    "total": 3,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}

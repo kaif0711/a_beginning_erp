@@ -34,18 +34,25 @@ const LoginPage = () => {
       return;
     }
 
+    /* 
+      DEMO MODE: Bypassing real server validation.
+      Any non-empty username/password will grant access.
+    */
     try {
+      // We still call Api.post to trigger the mock interceptor and simulate delay
       const data1 = await Api.post("/admin/login", { username, password });
 
       if (data1.status === 200) {
-        localStorage.setItem("userName", data1.data.data?.admin?.username);
-        localStorage.setItem("accessToken", data1.data.data?.accessToken);
-        localStorage.setItem("refreshToken", data1.data.data?.refreshToken);
+        // Store mock data in localStorage
+        localStorage.setItem("userName", username || "Demo User");
+        localStorage.setItem("accessToken", "mock_access_token");
+        localStorage.setItem("refreshToken", "mock_refresh_token");
 
         window.location.href = "/dashboard";
       }
     } catch (error) {
-      setErrors({ ...newErrors, api: "Invalid username or password" });
+      // This should ideally not happen in demo mode unless the interceptor fails
+      setErrors({ ...newErrors, api: "Invalid username or password (Demo Mode Error)" });
     }
   };
 

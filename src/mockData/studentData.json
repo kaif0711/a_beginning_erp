@@ -1,0 +1,65 @@
+{
+  "students": [
+    {
+      "id": "s1",
+      "name": "Arjun Sharma",
+      "fatherName": "Rajesh Sharma",
+      "gender": "Male",
+      "mobileNumber": "9876543210",
+      "DOB": "2002-05-15T00:00:00Z",
+      "course": { "id": "c1", "courseName": "Full Stack Web Development" },
+      "enrolledFees": 45000,
+      "customCourseFees": 45000
+    },
+    {
+      "id": "s2",
+      "name": "Priya Patel",
+      "fatherName": "Suresh Patel",
+      "gender": "Female",
+      "mobileNumber": "9876543211",
+      "DOB": "2003-08-22T00:00:00Z",
+      "course": { "id": "c2", "courseName": "Data Science with Python" },
+      "enrolledFees": 30000,
+      "customCourseFees": 55000
+    },
+    {
+      "id": "s3",
+      "name": "Rohan Gupta",
+      "fatherName": "Anil Gupta",
+      "gender": "Male",
+      "mobileNumber": "9876543212",
+      "DOB": "2001-11-10T00:00:00Z",
+      "course": { "id": "c3", "courseName": "UI/UX Design Masterclass" },
+      "enrolledFees": 35000,
+      "customCourseFees": 35000
+    },
+    {
+      "id": "s4",
+      "name": "Ananya Iyer",
+      "fatherName": "Venkatesh Iyer",
+      "gender": "Female",
+      "mobileNumber": "9876543213",
+      "DOB": "2004-02-28T00:00:00Z",
+      "course": { "id": "c1", "courseName": "Full Stack Web Development" },
+      "enrolledFees": 20000,
+      "customCourseFees": 45000
+    },
+    {
+      "id": "s5",
+      "name": "Karan Malhotra",
+      "fatherName": "Vikram Malhotra",
+      "gender": "Male",
+      "mobileNumber": "9876543214",
+      "DOB": "2002-09-05T00:00:00Z",
+      "course": { "id": "c4", "courseName": "Cyber Security Fundamentals" },
+      "enrolledFees": 40000,
+      "customCourseFees": 40000
+    }
+  ],
+  "pagination": {
+    "total": 5,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}

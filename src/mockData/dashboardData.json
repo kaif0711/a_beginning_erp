@@ -1,0 +1,34 @@
+{
+  "totalStudent": 450,
+  "totalCourse": 12,
+  "totalFees": 1250000,
+  "totalCertificate": 85,
+  "monthlyAdmissions": {
+    "Jan": 35,
+    "Feb": 42,
+    "Mar": 38,
+    "Apr": 50,
+    "May": 45,
+    "Jun": 30,
+    "Jul": 10,
+    "Aug": 5,
+    "Sep": 25,
+    "Oct": 32,
+    "Nov": 38,
+    "Dec": 41
+  },
+  "monthlyFeesCollection": {
+    "Jan": 120000,
+    "Feb": 150000,
+    "Mar": 110000,
+    "Apr": 180000,
+    "May": 160000,
+    "Jun": 130000,
+    "Jul": 90000,
+    "Aug": 85000,
+    "Sep": 105000,
+    "Oct": 140000,
+    "Nov": 125000,
+    "Dec": 135000
+  }
+}

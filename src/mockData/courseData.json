@@ -1,0 +1,50 @@
+{
+  "courses": [
+    {
+      "id": "c1",
+      "courseName": "Full Stack Web Development",
+      "coursePrice": 45000,
+      "courseDuration": 6,
+      "courseDurationUnit": "Months",
+      "courseDescription": "Master HTML, CSS, JS, React, and Node.js."
+    },
+    {
+      "id": "c2",
+      "courseName": "Data Science with Python",
+      "coursePrice": 55000,
+      "courseDuration": 4,
+      "courseDurationUnit": "Months",
+      "courseDescription": "Learn data analysis, visualization, and machine learning."
+    },
+    {
+      "id": "c3",
+      "courseName": "UI/UX Design Masterclass",
+      "coursePrice": 35000,
+      "courseDuration": 3,
+      "courseDurationUnit": "Months",
+      "courseDescription": "Design stunning user interfaces and experiences."
+    },
+    {
+      "id": "c4",
+      "courseName": "Cyber Security Fundamentals",
+      "coursePrice": 40000,
+      "courseDuration": 5,
+      "courseDurationUnit": "Months",
+      "courseDescription": "Protect networks and data from cyber threats."
+    },
+    {
+      "id": "c5",
+      "courseName": "Mobile App Development (Flutter)",
+      "coursePrice": 42000,
+      "courseDuration": 4,
+      "courseDurationUnit": "Months",
+      "courseDescription": "Build cross-platform apps for Android and iOS."
+    }
+  ],
+  "pagination": {
+    "total": 5,
+    "totalPage": 1,
+    "pageNo": 1,
+    "limit": 10
+  }
+}
